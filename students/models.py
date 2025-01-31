@@ -10,6 +10,7 @@ class Student(models.Model):
     phone = models.CharField(max_length=11)
     department = models.ForeignKey('Department', on_delete=models.CASCADE)
     applicant_type = models.ForeignKey('ApplicantType', on_delete=models.CASCADE)
+    required_documents = models.ManyToManyField('common.DocumentType')
 
     def __str__(self):
         return f"{self.id} {self.name}"
