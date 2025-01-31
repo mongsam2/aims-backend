@@ -18,7 +18,7 @@ class Department(models.Model):
     '''
     대학에 있는 학과들의 정보를 담은 모델
     '''
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.name
@@ -27,7 +27,7 @@ class ApplicantType(models.Model):
     '''
     대학 지원 유형들의 정보를 담은 모델
     '''
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.name
