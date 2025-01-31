@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'student_records.apps.StudentRecordsConfig',
     'students.apps.StudentsConfig',
     'users.apps.UsersConfig',
+    'common.apps.CommonConfig',
 ]
 
 MIDDLEWARE = [
