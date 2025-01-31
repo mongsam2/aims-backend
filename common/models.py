@@ -35,5 +35,8 @@ class CommonDocument(models.Model):
     memo = models.TextField(null=True, blank=True)
     upload_date = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.student} - {self.document_type} ({self.state})"  
+
     class Meta:
         abstract = True
