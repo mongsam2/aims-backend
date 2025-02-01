@@ -8,12 +8,13 @@ from rest_framework import status
 from .serializers import StudentRecordsSerializer
 
 # Models
-from .models import StudentRecord
+from .models import StudentRecord, Summarization
 from students.models import Student
 from common.models import DocumentType
 
 # Utils
 from utils.upstage import execute_ocr
+from utils.student_record import summarization_content, summarization_question
 
 # Exceptions
 from rest_framework.exceptions import NotFound, NotAcceptable
@@ -31,7 +32,10 @@ class StudentRecordsView(GenericAPIView, CreateModelMixin):
             - 파일 이름에 들어있는 수험번호가 현재 존재하지 않으면 404 에러를 반환
         '''
         file = request.data.get('file')
-        id, _ = file.name.split('_')
+        splited_file_name = file.name.split('_')
+        if len(splited_file_name) != 2:
+            raise NotAcceptable("파일 이름이 올바르지 않습니다.")
+        id, _ = splited_file_name
 
         # 수험번호 검증
         try:
@@ -50,16 +54,23 @@ class StudentRecordsView(GenericAPIView, CreateModelMixin):
             raise NotFound("DocumentType에서'학생생활기록부'을 찾을 수 없습니다.")
         
         api_key = settings.UPSTAGE_API_KEY
+
+        # OCR 추출
         extraction = execute_ocr(api_key, file.file)
+
+        # 생기부 요약, 질문 추출
+        content = summarization_content(extraction, api_key)
+        question = summarization_question(extraction, api_key)
+        summarization = Summarization.objects.create(content=content, question=question)
         
-        return self.create(request, student, document_type, extraction)
+        return self.create(request, student=student, document_type=document_type, extraction=extraction, summarization=summarization)
     
-    def create(self, request, student, document_type, extraction):
+    def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer, student, document_type, extraction)
+        self.perform_create(serializer, *args, **kwargs)    
         headers = self.get_success_headers(serializer.data) 
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
-    def perform_create(self, serializer, student, document_type, extraction):
-        serializer.save(student=student, document_type=document_type, state="제출", extraction=extraction)
+    def perform_create(self, serializer, *args, **kwargs):
+        serializer.save(**kwargs)
