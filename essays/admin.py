@@ -9,8 +9,8 @@ class EssayAdmin(CommonAdmin):
 
 @admin.register(EssayCriteria)
 class EssayCriteriaAdmin(admin.ModelAdmin):
-    list_display = ('__str__')
+    list_display = ('__str__',)
 
 @admin.register(EssayRange)
 class EssayRangeAdmin(admin.ModelAdmin):
-    list_display = ('__str__')
+    list_display = ('__str__',)
