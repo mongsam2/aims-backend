@@ -12,8 +12,14 @@ from .models import StudentRecord
 from students.models import Student
 from common.models import DocumentType
 
+# Utils
+from utils.upstage import execute_ocr
+
 # Exceptions
 from rest_framework.exceptions import NotFound, NotAcceptable
+
+# Settings
+from django.conf import settings
 
 # Create your views here.
 class StudentRecordsView(GenericAPIView, CreateModelMixin):
@@ -43,14 +49,17 @@ class StudentRecordsView(GenericAPIView, CreateModelMixin):
         except DocumentType.DoesNotExist:
             raise NotFound("DocumentType에서'학생생활기록부'을 찾을 수 없습니다.")
         
-        return self.create(request, student, document_type)
+        api_key = settings.UPSTAGE_API_KEY
+        extraction = execute_ocr(api_key, file.file)
+        
+        return self.create(request, student, document_type, extraction)
     
-    def create(self, request, student, document_type):
+    def create(self, request, student, document_type, extraction):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer, student, document_type)
+        self.perform_create(serializer, student, document_type, extraction)
         headers = self.get_success_headers(serializer.data) 
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
-    def perform_create(self, serializer, student, document_type):
-        serializer.save(student=student, document_type=document_type, state="제출")
+    def perform_create(self, serializer, student, document_type, extraction):
+        serializer.save(student=student, document_type=document_type, state="제출", extraction=extraction)
