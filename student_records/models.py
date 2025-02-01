@@ -16,4 +16,4 @@ class Summarization(models.Model):
     question = models.TextField()
 
     def __str__(self):
-        return f"{self.student_record.student}의 생기부 요약문"
+        return f"{self.id}의 생기부 요약문"
