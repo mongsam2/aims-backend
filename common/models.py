@@ -1,4 +1,5 @@
 from django.db import models
+from students.models import Student
 
 # Create your models here.
 def upload_to(instance, filename):
@@ -30,8 +31,8 @@ class CommonDocument(models.Model):
     extraction = models.TextField(null=True, blank=True)
     file = models.FileField(upload_to=upload_to)
     state = models.CharField(max_length=10, choices=StateChoices.choices, default=StateChoices.검토)
-    student = models.ForeignKey('students.Student', on_delete=models.CASCADE)
-    document_type = models.ForeignKey('DocumentType', on_delete=models.SET_NULL, null=True)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    document_type = models.ForeignKey(DocumentType, on_delete=models.SET_NULL, null=True)
     memo = models.TextField(null=True, blank=True)
     upload_date = models.DateTimeField(auto_now_add=True)
 
