@@ -6,3 +6,7 @@ from common.admin import CommonAdmin
 @admin.register(StudentRecord)
 class StudentRecordAdmin(CommonAdmin):
     pass
+
+@admin.register(Summarization)
+class SummarizationAdmin(admin.ModelAdmin):
+    pass
