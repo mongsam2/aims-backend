@@ -24,8 +24,9 @@ from django.conf import settings
 
 
 # Create your views here.
-class EssaysView(GenericAPIView, CreateModelMixin):
+class EssaysView(GenericAPIView, CreateModelMixin, ListModelMixin):
     serializer_class = EssaysSerializer
+    queryset = Essay.objects.filter(state="제출")
 
     def post(self, request):
         '''
@@ -84,6 +85,11 @@ class EssaysView(GenericAPIView, CreateModelMixin):
             state="제출"
         )
 
+    def get(self, request):
+        '''
+        제출된 논술 답안지 목록을 반환하는 API
+        '''
+        return self.list(request)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
