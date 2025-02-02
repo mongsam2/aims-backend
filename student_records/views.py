@@ -1,6 +1,6 @@
 # View
 from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import CreateModelMixin
+from rest_framework.mixins import CreateModelMixin, ListModelMixin
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -23,8 +23,15 @@ from rest_framework.exceptions import NotFound, NotAcceptable
 from django.conf import settings
 
 # Create your views here.
-class StudentRecordsView(GenericAPIView, CreateModelMixin):
+class StudentRecordsView(GenericAPIView, CreateModelMixin, ListModelMixin):
     serializer_class = StudentRecordsSerializer
+    queryset = StudentRecord.objects.filter(state="제출")
+
+    def get(self, request):
+        '''
+        제출된 학생생활기록부 목록을 반환하는 API
+        '''
+        return self.list(request)
 
     def post(self, request):
         '''
@@ -63,8 +70,16 @@ class StudentRecordsView(GenericAPIView, CreateModelMixin):
         question = summarization_question(extraction, api_key)
         summarization = Summarization.objects.create(content=content, question=question)
         
-        return self.create(request, student=student, document_type=document_type, extraction=extraction, summarization=summarization)
-    
+        return self.create(
+            request, 
+            student=student, 
+            document_type=document_type, 
+            extraction=extraction, 
+            summarization=summarization,
+            state="제출"
+        )
+
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)

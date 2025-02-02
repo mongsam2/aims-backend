@@ -5,4 +5,4 @@ from students.models import Student
 class StudentRecordsSerializer(ModelSerializer):
     class Meta:
         model = StudentRecord
-        fields = ("file",)
+        fields = ("id", "file",)
