@@ -94,6 +94,4 @@ class StudentRecordDetailView(RetrieveUpdateAPIView):
     serializer_class = StudentRecordDetailSerializer
     queryset = StudentRecord.objects.all()
     lookup_field = 'id'
-
-    def put(self, request, id):
-        raise MethodNotAllowed(method='PUT')
+    http_method_names = ['get']
