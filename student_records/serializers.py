@@ -17,3 +17,7 @@ class StudentRecordDetailSerializer(ModelSerializer):
         model = StudentRecord
         fields = "__all__"
 
+class StudentRecordMemoSerializer(ModelSerializer):
+    class Meta:
+        model = StudentRecord
+        fields = ("memo",)
