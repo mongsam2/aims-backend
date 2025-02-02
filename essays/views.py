@@ -1,11 +1,11 @@
 # Views
 from rest_framework.response import Response
-from rest_framework.generics import GenericAPIView, RetrieveAPIView
+from rest_framework.generics import GenericAPIView, RetrieveAPIView, ListAPIView
 from rest_framework.mixins import CreateModelMixin, ListModelMixin
 from rest_framework import status
 
 # Serializers
-from .serializers import EssaysSerializer, EssayDetailSerializer
+from .serializers import EssaysSerializer, EssayDetailSerializer, EssayCriteriaListSerializer
 
 # Models
 from .models import Essay, EssayCriteria
@@ -117,3 +117,9 @@ class EssayDetailView(RetrieveAPIView):
             'view': self,
             'essay_id': self.kwargs['id']
         }
+
+
+class EssayCriteriasView(ListAPIView):
+    serializer_class = EssayCriteriaListSerializer
+    queryset = EssayCriteria.objects.all()
+    lookup_field = 'id'

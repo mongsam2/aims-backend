@@ -27,6 +27,12 @@ class EssayCriteriaSerializer(ModelSerializer):
         model = EssayCriteria
         fields = ('title', 'criteria_items')
 
+class EssayCriteriaListSerializer(ModelSerializer):
+
+    class Meta:
+        model = EssayCriteria
+        fields = ('id', 'title')
+
 class EssayDetailSerializer(ModelSerializer):
     criteria = EssayCriteriaSerializer()
 
