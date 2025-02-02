@@ -6,3 +6,8 @@ class StudentRecordsSerializer(ModelSerializer):
     class Meta:
         model = StudentRecord
         fields = ("id", "file",)
+
+class StudentRecordDetailSerializer(ModelSerializer):
+    class Meta:
+        model = StudentRecord
+        fields = "__all__"
