@@ -2,6 +2,7 @@
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import CreateModelMixin, ListModelMixin
+from rest_framework import status
 
 # Serializers
 from .serializers import EssaysSerializer
@@ -71,4 +72,25 @@ class EssaysView(GenericAPIView, CreateModelMixin):
         # OCR 추출
         extraction = execute_ocr(api_key, file.file)
         evaluation, penalty = evaluate(api_key, extraction, criteria)
-        return Response({"evaluation": evaluation, "penalty": penalty, "extraction": extraction})
+        
+        return self.create(
+            request, 
+            student=student, 
+            document_type=document_type, 
+            extraction=extraction, 
+            evaluation=evaluation,
+            score_by_length=penalty,
+            criteria=criteria,
+            state="제출"
+        )
+
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer, *args, **kwargs)    
+        headers = self.get_success_headers(serializer.data) 
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+    def perform_create(self, serializer, *args, **kwargs):
+        serializer.save(**kwargs)
