@@ -20,7 +20,7 @@ class EssayScore(models.Model):
     score = models.IntegerField()
 
     def __str__(self):
-        return f"{self.essay.student}의 평가 항목 점수"
+        return f"{self.essay}의 평가 항목 점수"
 
 
 class EssayCriteria(models.Model):
