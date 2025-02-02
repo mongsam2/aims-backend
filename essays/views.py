@@ -13,9 +13,10 @@ from common.models import DocumentType
 
 # Utils
 from utils.upstage import execute_ocr
+from utils.essay import evaluate
 
 # Exceptions
-from rest_framework.exceptions import NotFound, NotAcceptable
+from rest_framework.exceptions import NotFound, NotAcceptable, ParseError
 
 # Settings
 from django.conf import settings
@@ -31,6 +32,8 @@ class EssaysView(GenericAPIView, CreateModelMixin):
             - 파일 이름에 들어있는 수험번호가 현재 존재하지 않으면 404 에러를 반환
         '''
         file = request.data.get('file')
+        if not file:
+            raise ParseError("파일을 첨부해주세요.")
         splited_file_name = file.name.split('_')
         if len(splited_file_name) != 2:
             raise NotAcceptable("파일 이름이 올바르지 않습니다.")
@@ -41,6 +44,10 @@ class EssaysView(GenericAPIView, CreateModelMixin):
             student = Student.objects.get(id=id)
         except Student.DoesNotExist:
             raise NotFound(f"{id} 학생을 DB에서 찾을 수 없습니다.")
+        
+        # criteria 검증
+        if not request.data.get('criteria'):
+            raise ParseError("평가 항목을 선택해주세요.")
         
         # 기존에 제출 완료된 생기부가 존재 여부 검증
         if Essay.objects.filter(student=student, state="제출").exists():
@@ -58,10 +65,10 @@ class EssaysView(GenericAPIView, CreateModelMixin):
             criteria = EssayCriteria.objects.get(id=criteria_id)
         except EssayCriteria.DoesNotExist:
             raise NotFound(f"id:{criteria_id} 평가 항목을 찾을 수 없습니다.")
-        
-        return Response(status=201)
-        
+    
         api_key = settings.UPSTAGE_API_KEY
-
+        
         # OCR 추출
         extraction = execute_ocr(api_key, file.file)
+        evaluation, penalty = evaluate(api_key, extraction, criteria)
+        return Response({"evaluation": evaluation, "penalty": penalty, "extraction": extraction})
