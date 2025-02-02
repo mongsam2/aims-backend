@@ -1,3 +1,67 @@
-from django.shortcuts import render
+# Views
+from rest_framework.response import Response
+from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import CreateModelMixin, ListModelMixin
+
+# Serializers
+from .serializers import EssaysSerializer
+
+# Models
+from .models import Essay, EssayCriteria
+from students.models import Student
+from common.models import DocumentType
+
+# Utils
+from utils.upstage import execute_ocr
+
+# Exceptions
+from rest_framework.exceptions import NotFound, NotAcceptable
+
+# Settings
+from django.conf import settings
+
 
 # Create your views here.
+class EssaysView(GenericAPIView, CreateModelMixin):
+    serializer_class = EssaysSerializer
+
+    def post(self, request):
+        '''
+        논술 답안지를 업로드하는 API
+            - 파일 이름에 들어있는 수험번호가 현재 존재하지 않으면 404 에러를 반환
+        '''
+        file = request.data.get('file')
+        splited_file_name = file.name.split('_')
+        if len(splited_file_name) != 2:
+            raise NotAcceptable("파일 이름이 올바르지 않습니다.")
+        id, _ = splited_file_name
+
+        # 수험번호 검증
+        try:
+            student = Student.objects.get(id=id)
+        except Student.DoesNotExist:
+            raise NotFound(f"{id} 학생을 DB에서 찾을 수 없습니다.")
+        
+        # 기존에 제출 완료된 생기부가 존재 여부 검증
+        if Essay.objects.filter(student=student, state="제출").exists():
+            raise NotAcceptable(f"{id} 학생의 논술 답안지가 이미 제출되었습니다.")
+        
+        # DocumentType 검증
+        try:
+            document_type = DocumentType.objects.get(name='논술')
+        except DocumentType.DoesNotExist:
+            raise NotFound("DocumentType에서'논술'을 찾을 수 없습니다.")
+        
+        # Criteria
+        criteria_id = request.data.get('criteria')
+        try:
+            criteria = EssayCriteria.objects.get(id=criteria_id)
+        except EssayCriteria.DoesNotExist:
+            raise NotFound(f"id:{criteria_id} 평가 항목을 찾을 수 없습니다.")
+        
+        return Response(status=201)
+        
+        api_key = settings.UPSTAGE_API_KEY
+
+        # OCR 추출
+        extraction = execute_ocr(api_key, file.file)
