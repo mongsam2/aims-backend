@@ -1,10 +1,10 @@
-# View
+# Views
 from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, UpdateAPIView
 from rest_framework.mixins import CreateModelMixin, ListModelMixin
 from rest_framework.response import Response
 from rest_framework import status
 
-# Serializer
+# Serializers
 from .serializers import StudentRecordsSerializer, StudentRecordDetailSerializer, StudentRecordMemoSerializer
 
 # Models
@@ -17,7 +17,7 @@ from utils.upstage import execute_ocr
 from utils.student_record import summarization_content, summarization_question
 
 # Exceptions
-from rest_framework.exceptions import NotFound, NotAcceptable, MethodNotAllowed
+from rest_framework.exceptions import NotFound, NotAcceptable, ParseError
 
 # Settings
 from django.conf import settings
@@ -39,6 +39,8 @@ class StudentRecordsView(GenericAPIView, CreateModelMixin, ListModelMixin):
             - 파일 이름에 들어있는 수험번호가 현재 존재하지 않으면 404 에러를 반환
         '''
         file = request.data.get('file')
+        if not file:
+            raise ParseError("파일을 첨부해주세요.")
         splited_file_name = file.name.split('_')
         if len(splited_file_name) != 2:
             raise NotAcceptable("파일 이름이 올바르지 않습니다.")
