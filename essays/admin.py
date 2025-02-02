@@ -1,14 +1,22 @@
 from django.contrib import admin
 from common.admin import CommonAdmin
-from .models import Essay, EssayCriteria, EssayRange
+from .models import Essay, EssayScore, EssayCriteria, CriteriaItem, EssayRange
 
 # Register your models here.
 @admin.register(Essay)
 class EssayAdmin(CommonAdmin):
     pass
 
+@admin.register(EssayScore)
+class EssayScoreAdmin(admin.ModelAdmin):
+    pass
+
 @admin.register(EssayCriteria)
 class EssayCriteriaAdmin(admin.ModelAdmin):
+    list_display = ('__str__',)
+
+@admin.register(CriteriaItem)
+class CriteriaItemAdmin(admin.ModelAdmin):
     list_display = ('__str__',)
 
 @admin.register(EssayRange)

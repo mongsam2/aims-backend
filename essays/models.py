@@ -51,4 +51,4 @@ class EssayRange(models.Model):
     penalty = models.IntegerField()
 
     def __str__(self):
-        return f"{self.min} ~ {self.max} 글자: ({self.penalty}점)"
+        return f"{self.min_value} ~ {self.max_value} 글자: ({self.penalty}점)"
