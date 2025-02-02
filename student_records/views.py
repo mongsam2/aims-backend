@@ -1,11 +1,11 @@
 # View
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
 from rest_framework.mixins import CreateModelMixin, ListModelMixin
 from rest_framework.response import Response
 from rest_framework import status
 
 # Serializer
-from .serializers import StudentRecordsSerializer
+from .serializers import StudentRecordsSerializer, StudentRecordDetailSerializer
 
 # Models
 from .models import StudentRecord, Summarization
@@ -17,7 +17,7 @@ from utils.upstage import execute_ocr
 from utils.student_record import summarization_content, summarization_question
 
 # Exceptions
-from rest_framework.exceptions import NotFound, NotAcceptable
+from rest_framework.exceptions import NotFound, NotAcceptable, MethodNotAllowed
 
 # Settings
 from django.conf import settings
@@ -89,3 +89,9 @@ class StudentRecordsView(GenericAPIView, CreateModelMixin, ListModelMixin):
     
     def perform_create(self, serializer, *args, **kwargs):
         serializer.save(**kwargs)
+
+class StudentRecordDetailView(RetrieveUpdateAPIView):
+    serializer_class = StudentRecordDetailSerializer
+    queryset = StudentRecord.objects.all()
+    lookup_field = 'id'
+    http_method_names = ['get']
