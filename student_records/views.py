@@ -1,11 +1,11 @@
 # View
-from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, UpdateAPIView
 from rest_framework.mixins import CreateModelMixin, ListModelMixin
 from rest_framework.response import Response
 from rest_framework import status
 
 # Serializer
-from .serializers import StudentRecordsSerializer, StudentRecordDetailSerializer
+from .serializers import StudentRecordsSerializer, StudentRecordDetailSerializer, StudentRecordMemoSerializer
 
 # Models
 from .models import StudentRecord, Summarization
@@ -95,3 +95,9 @@ class StudentRecordDetailView(RetrieveUpdateAPIView):
     queryset = StudentRecord.objects.all()
     lookup_field = 'id'
     http_method_names = ['get']
+
+class StudentRecordMemoView(UpdateAPIView):
+    serializer_class = StudentRecordMemoSerializer
+    queryset = StudentRecord.objects.all()
+    lookup_field = 'id'
+    http_method_names = ['patch']
