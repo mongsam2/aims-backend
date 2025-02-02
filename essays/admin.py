@@ -9,7 +9,7 @@ class EssayAdmin(CommonAdmin):
 
 @admin.register(EssayScore)
 class EssayScoreAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('__str__', 'criteria_item', 'score')
 
 @admin.register(EssayCriteria)
 class EssayCriteriaAdmin(admin.ModelAdmin):

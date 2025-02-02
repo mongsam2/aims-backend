@@ -19,6 +19,9 @@ class EssayScore(models.Model):
     essay = models.ForeignKey('Essay', on_delete=models.CASCADE, related_name='scores')
     score = models.IntegerField()
 
+    def __str__(self):
+        return f"{self.essay.student}의 평가 항목 점수"
+
 
 class EssayCriteria(models.Model):
     '''
