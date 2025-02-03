@@ -7,6 +7,7 @@ class Document(CommonDocument):
     입시 제출 서류들을 저장하는 모델
     '''
     fails = models.ForeignKey("DocumentFail", on_delete=models.SET_NULL, null=True, blank=True)
+    student = models.ForeignKey('students.Student', on_delete=models.CASCADE, related_name='documents')
 
 class DocumentPassFail(models.Model):
     '''
