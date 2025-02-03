@@ -28,7 +28,7 @@ class ApplicantType(models.Model):
     '''
     대학 지원 유형들의 정보를 담은 모델
     '''
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50, primary_key=True)
 
     def __str__(self):
         return self.name
