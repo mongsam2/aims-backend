@@ -6,3 +6,7 @@ from .models import Document, DocumentPassFail
 @admin.register(Document)
 class DocumentAdmin(CommonAdmin):
     pass
+
+@admin.register(DocumentPassFail)
+class DocumentPassFailAdmin(CommonAdmin):
+    list_display = ('document', "failed_condition")
