@@ -13,5 +13,5 @@ class DocumentPassFail(models.Model):
     제출 서류의 부적합 이유들을 저장하는 모델
     '''
     page = models.IntegerField()
-    failed_condition = models.TextField()
-    document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='document_pass_fails')
+    failed_condition = models.CharField(max_length=200)
+    document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='document_pass_fails', null=True)
