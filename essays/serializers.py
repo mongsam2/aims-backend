@@ -57,3 +57,8 @@ class EssayScoreSerializer(ModelSerializer):
         if criteria_item.id not in  essay.criteria.criteria_items.values_list('id', flat=True):
             raise ValidationError(f"CriteriaItem [{criteria_item}] 은 해당 논술의 평가 항목이 아닙니다.")
         return criteria_item
+
+class EssayMemoSerializer(ModelSerializer):
+    class Meta:
+        model = Essay
+        fields = ('memo',)

@@ -1,12 +1,12 @@
 # Views
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import GenericAPIView, RetrieveAPIView, ListAPIView
-from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
+from rest_framework.generics import GenericAPIView, RetrieveAPIView, ListAPIView, UpdateAPIView
+from rest_framework.mixins import CreateModelMixin, ListModelMixin
 from rest_framework import status
 
 # Serializers
-from .serializers import EssaysSerializer, EssayDetailSerializer, EssayCriteriaListSerializer, EssayScoreSerializer
+from .serializers import EssaysSerializer, EssayDetailSerializer, EssayCriteriaListSerializer, EssayScoreSerializer, EssayMemoSerializer
 
 # Models
 from .models import Essay, EssayCriteria, CriteriaItem, EssayScore
@@ -152,3 +152,10 @@ class EssayScoreView(APIView):
                 essay_score_list.append(EssayScore(essay=essay, **data))
             EssayScore.objects.bulk_create(essay_score_list)
         return Response(f"{id} 논술 답안지의 {len(serializer.data)}개 항목 점수가 저장되었습니다.", status=status.HTTP_201_CREATED)
+    
+
+class EssayMemoView(UpdateAPIView):
+    serializer_class = EssayMemoSerializer
+    queryset = Essay.objects.all()
+    lookup_field = 'id'
+    http_method_names = ['patch']
