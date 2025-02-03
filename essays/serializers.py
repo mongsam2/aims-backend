@@ -14,7 +14,7 @@ class CriteriaItemSerializer(ModelSerializer):
 
     class Meta:
         model = CriteriaItem
-        fields = ('content', 'score')
+        fields = ('id', 'content', 'score')
 
     def get_score(self, obj):
         essay_id = self.context['essay_id']
