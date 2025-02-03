@@ -1,5 +1,6 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from .models import Student
+from documents.models import Document, DocumentPassFail
 
 class StudentListSerializer(ModelSerializer):
     documents = SerializerMethodField()
