@@ -16,7 +16,7 @@ class EssayScore(models.Model):
     논술 답안지의 평가 항목별 점수를 저장하는 모델
     '''
     criteria_item = models.ForeignKey('CriteriaItem', on_delete=models.SET_NULL, null=True, blank=True, related_name='essay_scores')
-    essay = models.ForeignKey('Essay', on_delete=models.CASCADE, related_name='scores')
+    essay = models.ForeignKey('Essay', on_delete=models.CASCADE, related_name='essay_scores')
     score = models.IntegerField()
 
     def __str__(self):
