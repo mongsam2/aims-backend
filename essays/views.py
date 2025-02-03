@@ -1,14 +1,15 @@
 # Views
 from rest_framework.response import Response
-from rest_framework.generics import GenericAPIView, RetrieveAPIView, ListAPIView
+from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView, RetrieveAPIView, ListAPIView, UpdateAPIView
 from rest_framework.mixins import CreateModelMixin, ListModelMixin
 from rest_framework import status
 
 # Serializers
-from .serializers import EssaysSerializer, EssayDetailSerializer, EssayCriteriaListSerializer
+from .serializers import EssaysSerializer, EssayDetailSerializer, EssayCriteriaListSerializer, EssayScoreSerializer, EssayMemoSerializer
 
 # Models
-from .models import Essay, EssayCriteria
+from .models import Essay, EssayCriteria, CriteriaItem, EssayScore
 from students.models import Student
 from common.models import DocumentType
 
@@ -123,3 +124,38 @@ class EssayCriteriasView(ListAPIView):
     serializer_class = EssayCriteriaListSerializer
     queryset = EssayCriteria.objects.all()
     lookup_field = 'id'
+
+
+class EssayScoreView(APIView):
+    def get_object(self, id):
+        try:
+            return Essay.objects.get(id=id)
+        except Essay.DoesNotExist:
+            raise NotFound(f"id:{id} 논술 답안지를 찾을 수 없습니다.")
+
+    def post(self, request, id):
+        essay = self.get_object(id)
+        serializer = EssayScoreSerializer(data=request.data, many=True, context={'essay': essay})
+        
+        # 이미 평가를 한 상태인지 검증
+        if essay.essay_scores.exists():
+            raise NotAcceptable(f"{id} 논술 답안지의 평가 항목 점수가 이미 존재합니다.")
+
+        if serializer.is_valid(raise_exception=True):
+            # 평가항목의 개수가 일치하는지 검증
+            if len(serializer.validated_data) != essay.criteria.criteria_items.count():
+                raise ParseError("평가 항목의 개수가 일치하지 않습니다.")
+            
+            # 이미 채점을 한 상태인지 검증증
+            essay_score_list = []
+            for data in serializer.validated_data:
+                essay_score_list.append(EssayScore(essay=essay, **data))
+            EssayScore.objects.bulk_create(essay_score_list)
+        return Response(f"{id} 논술 답안지의 {len(serializer.data)}개 항목 점수가 저장되었습니다.", status=status.HTTP_201_CREATED)
+    
+
+class EssayMemoView(UpdateAPIView):
+    serializer_class = EssayMemoSerializer
+    queryset = Essay.objects.all()
+    lookup_field = 'id'
+    http_method_names = ['patch']

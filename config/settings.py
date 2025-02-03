@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     # custom apps
     'essays.apps.EssaysConfig',
     'student_records.apps.StudentRecordsConfig',
+    'documents.apps.DocumentsConfig',
     'students.apps.StudentsConfig',
     'users.apps.UsersConfig',
     'common.apps.CommonConfig',
