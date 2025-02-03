@@ -1,6 +1,11 @@
 from rest_framework.serializers import ModelSerializer
 from .models import Document, DocumentPassFail
 
+class DocumentUploadSerializer(ModelSerializer):
+    class Meta:
+        model = Document
+        fields = ('file',)
+
 class DocumentPassFailSerializer(ModelSerializer):
     class Meta:
         model = DocumentPassFail
