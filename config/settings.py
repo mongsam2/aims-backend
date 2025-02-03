@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     #third-party apps
     'rest_framework',
+    'rest_framework_simplejwt',
 
     # custom apps
     'essays.apps.EssaysConfig',
@@ -137,6 +138,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom user model
 AUTH_USER_MODEL = 'users.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+# SimpleJWT 설정 (옵션)
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # 액세스 토큰 유효 시간
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # 리프레시 토큰 유효 시간
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
 
 # API Key
 UPSTAGE_API_KEY = os.getenv('UPSTAGE_API_KEY')
