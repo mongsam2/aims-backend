@@ -6,7 +6,7 @@ class StudentListSerializer(ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ('id', 'name', 'department', 'phone', 'application_type', 'documents')
+        fields = ('id', 'name', 'department', 'phone', 'applicant_type', 'documents')
 
     def get_documents(self, student):
         answer = dict()
@@ -20,18 +20,20 @@ class StudentListSerializer(ModelSerializer):
             else:
                 answer[document_type] = "미제출"
 
-        if student.student_records.filter(state='제출').exists():
-            answer["학생생활기록부"] = "제출"
-        elif student.student_records.filter(state='검토').exists():
-            answer["학생생활기록부"] = "검토"
-        else:
-            answer["학생생활기록부"] = "미제출"
+        if "학생생활기록부" in required_documents:
+            if student.student_records.filter(state='제출').exists():
+                answer["학생생활기록부"] = "제출"
+            elif student.student_records.filter(state='검토').exists():
+                answer["학생생활기록부"] = "검토"
+            else:
+                answer["학생생활기록부"] = "미제출"
 
-        if student.essays.filter(state='제출').exists():
-            answer["논술"] = "제출"
-        elif student.essays.filter(state='검토').exists():
-            answer["논술"] = "검토"
-        else:
-            answer["논술"] = "미제출"
+        if "논술" in required_documents:
+            if student.essays.filter(state='제출').exists():
+                answer["논술"] = "제출"
+            elif student.essays.filter(state='검토').exists():
+                answer["논술"] = "검토"
+            else:
+                answer["논술"] = "미제출"
         
         return answer
