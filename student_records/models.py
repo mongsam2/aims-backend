@@ -6,6 +6,7 @@ class StudentRecord(CommonDocument):
     '''
     학생생활기록부를 저장하는 모델
     '''
+    student = models.ForeignKey('students.Student', on_delete=models.CASCADE, related_name="student_records")
     summarization = models.OneToOneField('Summarization', on_delete=models.SET_NULL, null=True, blank=True, related_name='student_record')
 
 class Summarization(models.Model):

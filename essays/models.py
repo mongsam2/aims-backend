@@ -6,6 +6,7 @@ class Essay(CommonDocument):
     '''
     논술 답안지를 저장하는 모델
     '''
+    student = models.ForeignKey('students.Student', on_delete=models.CASCADE, related_name='essays')
     evaluation = models.TextField(null=True, blank=True)
     score_by_length = models.IntegerField(null=True, blank=True)
     criteria = models.ForeignKey('EssayCriteria', on_delete=models.SET_NULL, null=True, blank=True)

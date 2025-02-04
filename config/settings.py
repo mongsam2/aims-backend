@@ -43,10 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     #third-party apps
     'rest_framework',
+    'rest_framework_simplejwt',
 
     # custom apps
     'essays.apps.EssaysConfig',
     'student_records.apps.StudentRecordsConfig',
+    'documents.apps.DocumentsConfig',
     'students.apps.StudentsConfig',
     'users.apps.UsersConfig',
     'common.apps.CommonConfig',
@@ -137,6 +139,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom user model
 AUTH_USER_MODEL = 'users.User'
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",  # 세션 인증 사용
+    ],
+}
 
 # API Key
 UPSTAGE_API_KEY = os.getenv('UPSTAGE_API_KEY')
