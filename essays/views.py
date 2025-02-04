@@ -15,7 +15,7 @@ from common.models import DocumentType
 
 # Utils
 from utils.upstage import execute_ocr
-from utils.essay import evaluate
+from utils.essay import evaluate, process_ocr_task_for_essay
 
 # Exceptions
 from rest_framework.exceptions import NotFound, NotAcceptable, ParseError
@@ -62,7 +62,7 @@ class EssaysView(GenericAPIView, CreateModelMixin, ListModelMixin):
         except DocumentType.DoesNotExist:
             raise NotFound("DocumentType에서'논술'을 찾을 수 없습니다.")
         
-        # Criteria
+        # Criteria 검증
         criteria_id = request.data.get('criteria')
         try:
             criteria = EssayCriteria.objects.get(id=criteria_id)
@@ -72,8 +72,11 @@ class EssaysView(GenericAPIView, CreateModelMixin, ListModelMixin):
         api_key = settings.UPSTAGE_API_KEY
         
         # OCR 추출
-        extraction = execute_ocr(api_key, file.file)
+        extraction, confidence = execute_ocr(api_key, file.file)
         evaluation, penalty = evaluate(api_key, extraction, criteria)
+
+        # 논술 파일용 전처리
+        extraction = process_ocr_task_for_essay(api_key, extraction, confidence)
         
         return self.create(
             request, 
