@@ -15,7 +15,8 @@ def execute_ocr(api_key, file):
 
     if response.status_code == 200:
         content = response.json().get("text", "")
-        return content
+        confidence = response.json().get("confidence", 0)
+        return content, confidence
     else:
         print(response.json())
         return "Upstage OCR API 요청에 실패했습니다."
