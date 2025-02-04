@@ -137,9 +137,9 @@ class EssayScoreView(APIView):
         essay = self.get_object(id)
         serializer = EssayScoreSerializer(data=request.data, many=True, context={'essay': essay})
         
-        # 이미 평가를 한 상태인지 검증
+        # 이미 평가를 한 상태인지 확인
         if essay.essay_scores.exists():
-            raise NotAcceptable(f"{id} 논술 답안지의 평가 항목 점수가 이미 존재합니다.")
+            essay.essay_scores.all().delete()
 
         if serializer.is_valid(raise_exception=True):
             # 평가항목의 개수가 일치하는지 검증
