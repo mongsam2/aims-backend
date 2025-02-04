@@ -44,3 +44,16 @@ def evaluate(api_key, content, criteria):
             break
 
     return summary_extract, penalty
+
+def process_ocr_task_for_essay(api_key, content, confidence):
+    threshold = 0.8
+    # OCR 인식률 저하 시 경고 메시지 저장
+    if confidence <= threshold:
+        warning = f'경고: OCR 신뢰도가 낮습니다 ({confidence:.2f}). 텍스트가 부정확할 수 있습니다.\n'
+        return warning + content
+    else:
+        prompt_path = os.path.join(settings.BASE_DIR, 'prompts', 'refine_prompt.txt')
+        with open(prompt_path, 'r', encoding='utf-8') as f:
+            prompt = f.read()
+        refined_content = get_answer_from_solar(api_key, content, prompt)
+        return refined_content
