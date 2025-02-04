@@ -19,7 +19,7 @@ class DocumentType(models.Model):
     '''
     서류의 종류를 저장하는 모델 (학생생활기록부, 논술, 기타 등등)
     '''
-    name = models.CharField(primary_key=True, max_length=50)
+    name = models.CharField(unique=True, max_length=50)
 
     def __str__(self):
         return self.name
