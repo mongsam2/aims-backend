@@ -1,6 +1,5 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
-from .models import Student
-from documents.models import Document, DocumentPassFail
+from .models import Student, ApplicantType
 
 class StudentListSerializer(ModelSerializer):
     documents = SerializerMethodField()
@@ -38,3 +37,8 @@ class StudentListSerializer(ModelSerializer):
                 answer["논술"] = "미제출"
         
         return answer
+
+class ApplicantTypesSerializer(ModelSerializer):
+    class Meta:
+        model = ApplicantType
+        fields = ('id', 'name')
