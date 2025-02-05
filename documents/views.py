@@ -1,4 +1,5 @@
 # Views
+from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import CreateModelMixin
 
@@ -7,6 +8,9 @@ from .serializers import DocumentUploadSerializer
 
 # Utils
 from utils.upstage import execute_ocr
+from utils.document import predict_document_type
+from django.conf import settings
+import os
 
 # Exceptions
 from rest_framework.exceptions import ParseError
@@ -19,7 +23,11 @@ class DocumentUploadView(GenericAPIView, CreateModelMixin):
         file = request.data.get('file')
         if not file:
             raise ParseError("파일을 첨부해주세요.")
-        excuted_text = execute_ocr(file.file)
+        
+        api_key = settings.UPSTAGE_API_KEY
+        excuted_text = execute_ocr(api_key, file.file)
+        document_type = predict_document_type(file.file)
+        return Response({"document_type": document_type})
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
