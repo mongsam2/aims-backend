@@ -31,8 +31,8 @@ class CommonDocument(models.Model):
     extraction = models.TextField(null=True, blank=True)
     file = models.FileField(upload_to=upload_to)
     state = models.CharField(max_length=10, choices=StateChoices.choices, default=StateChoices.검토)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    document_type = models.ForeignKey(DocumentType, on_delete=models.SET_NULL, null=True)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, blank=True, null=True)
+    document_type = models.ForeignKey(DocumentType, on_delete=models.SET_NULL, null=True, blank=True)
     memo = models.TextField(null=True, blank=True)
     upload_date = models.DateTimeField(auto_now_add=True)
 
