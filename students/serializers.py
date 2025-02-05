@@ -3,19 +3,23 @@ from .models import Student, ApplicantType
 
 class StudentListSerializer(ModelSerializer):
     documents = SerializerMethodField()
+    department = SerializerMethodField()
 
     class Meta:
         model = Student
         fields = ('id', 'name', 'department', 'phone', 'applicant_type', 'documents')
+    
+    def get_default(self, student):
+        return student.department.name
 
     def get_documents(self, student):
         answer = dict()
 
         required_documents = student.required_documents.values_list('name', flat=True)
         for document_type in required_documents:
-            if student.documents.filter(document_type=document_type, state="제출").exists():
+            if student.documents.filter(document_type__name=document_type, state="제출").exists():
                 answer[document_type] = "제출"
-            elif student.documents.filter(document_type=document_type, state="검토").exists():
+            elif student.documents.filter(document_type__name=document_type, state="검토").exists():
                 answer[document_type] = "검토"
             else:
                 answer[document_type] = "미제출"
