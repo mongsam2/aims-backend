@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     #third-party apps
     'rest_framework',
     'rest_framework_simplejwt',
+    "django_celery_beat",
+    "django_celery_results",
 
     # custom apps
     'essays.apps.EssaysConfig',
@@ -151,3 +153,9 @@ REST_FRAMEWORK = {
 
 # API Key
 UPSTAGE_API_KEY = os.getenv('UPSTAGE_API_KEY')
+
+# Celery 설정
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"

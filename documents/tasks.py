@@ -1,3 +1,9 @@
+# api/tasks.py
+
+from typing import List
+
+from celery import shared_task
+
 import os
 import torch
 
@@ -10,11 +16,7 @@ from PIL import Image
 from torchvision import transforms
 from pdf2image import convert_from_path
 
-import re
-
-
 MODEL_DIR = os.path.join(settings.BASE_DIR, "parameters")
-
 
 def load_model(model_name="student_model.pth"):
 
@@ -32,7 +34,7 @@ def load_model(model_name="student_model.pth"):
 
     return model
 
-
+@shared_task
 def predict_document_type(file_path, class_labels=["검정고시합격증명서", "국민체력100인증서", "기초생활수급자증명서", "주민등록초본", "체력평가", "생활기록부대체양식"]):
     
     model = load_model()
@@ -109,21 +111,3 @@ def preprocess_image(file_path):
     print(f"🗑️ 변환된 이미지 삭제 완료: {file_path}")
 
     return image
-
-def extract_student_number(content):
-    """
-    입력된 문자열에서 '수험번호' 패턴 이후의 8자리 숫자를 찾아 반환하는 함수.
-    """
-    
-    patterns = [
-        r"(수\s?험\s?번\s?호\s?)?(\d{8})",
-        r"(\d{8})"
-    ]
-
-    nums = []
-
-    for pattern in patterns:
-        matches = re.findall(pattern, content)
-        nums.extend(matches)
- 
-    return list(set(nums))
