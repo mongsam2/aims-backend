@@ -3,10 +3,14 @@ from .models import Student, ApplicantType
 
 class StudentListSerializer(ModelSerializer):
     documents = SerializerMethodField()
+    department = SerializerMethodField()
 
     class Meta:
         model = Student
         fields = ('id', 'name', 'department', 'phone', 'applicant_type', 'documents')
+    
+    def get_default(self, student):
+        return student.department.name
 
     def get_documents(self, student):
         answer = dict()
