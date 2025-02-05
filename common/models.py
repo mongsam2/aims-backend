@@ -7,6 +7,7 @@ def upload_to(instance, filename):
     FileField의 upload_to 매개변수에 사용할 함수
     '''
     return f"{instance.student}/{instance.document_type}/{filename}"
+    
 
 class StateChoices(models.TextChoices):
     '''
