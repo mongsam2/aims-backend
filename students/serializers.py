@@ -9,7 +9,7 @@ class StudentListSerializer(ModelSerializer):
         model = Student
         fields = ('id', 'name', 'department', 'phone', 'applicant_type', 'documents')
     
-    def get_default(self, student):
+    def get_department(self, student):
         return student.department.name
 
     def get_documents(self, student):

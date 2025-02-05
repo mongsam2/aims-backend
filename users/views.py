@@ -31,7 +31,8 @@ class LoginView(APIView):
 class GetCSRFTokenView(APIView):
     def get(self, request):
         return Response({"message": "CSRF 토큰 설정됨."})
-    
+
+
 class LogoutView(APIView):
     def post(self, request):
         logout(request)  # 세션 로그아웃 처리
