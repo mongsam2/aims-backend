@@ -5,7 +5,7 @@ from rest_framework.generics import ListAPIView
 from students.models import Student
 from documents.models import Document
 from student_records.models import StudentRecord
-from essays.models import Essay
+from common.models import DocumentType
 
 # Serializers
 from .serializers import StudentListSerializer
@@ -23,11 +23,11 @@ class StudentDocumentsView(ListAPIView):
     serializer_class = DocumentSerializer
 
     def get_queryset(self):
-        document_type = self.kwargs['document_type']
+        document_type_name = self.kwargs['document_type']
         student_id = self.kwargs['id']
-        if document_type == '학생생활기록부':
+        if document_type_name == '학생생활기록부':
             raise NotAcceptable('학생생활기록부는 별도의 API로 요청해주세요.')
-        elif document_type == '논술':
+        elif document_type_name == '논술':
             raise NotAcceptable('논술은 별도의 API로 요청해주세요.')
         else:
-            return Document.objects.filter(student=self.kwargs['id'], document_type=self.kwargs['document_type']).order_by('-upload_date')
+            return Document.objects.filter(student=student_id, document_type__name=document_type_name).order_by('-upload_date')
