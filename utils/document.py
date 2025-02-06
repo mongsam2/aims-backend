@@ -125,5 +125,8 @@ def extract_student_number(content):
     for pattern in patterns:
         matches = re.findall(pattern, content)
         nums.extend(matches)
- 
-    return list(set(nums))
+    nums = list(set(nums))
+    if nums:
+        return nums[0]
+    else:
+        return "20250000"

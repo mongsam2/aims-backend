@@ -31,7 +31,7 @@ class DocumentUploadView(GenericAPIView, CreateModelMixin):
         api_key = settings.UPSTAGE_API_KEY
         excuted_text, confidence = execute_ocr(api_key, document.file.file)
         document_type, confidence = predict_document_type(document.file.path)
-        student_id = extract_student_number(excuted_text)[1]
+        student_id = extract_student_number(excuted_text)[0]
 
         try:
             default_student = Student.objects.get(name="무명이")
