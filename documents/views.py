@@ -35,7 +35,7 @@ class DocumentUploadView(GenericAPIView, CreateModelMixin):
 
         try:
             default_student = Student.objects.get(name="무명이")
-            default_document_type = DocumentType.objects.get(name="해당없음")
+            default_document_type = DocumentType.objects.get(name="알수없음")
             document.student = default_student
             document.document_type = default_document_type
             document.extraction = excuted_text
