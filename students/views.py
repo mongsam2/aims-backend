@@ -9,7 +9,7 @@ from common.models import DocumentType
 
 # Serializers
 from .serializers import StudentListSerializer
-from documents.serializers import DocumentSerializer
+from documents.serializers import DocumentSerializer, DocumentDetailSerializer
 
 # Exceptions
 from rest_framework.exceptions import NotAcceptable
@@ -31,3 +31,10 @@ class StudentDocumentsView(ListAPIView):
             raise NotAcceptable('논술은 별도의 API로 요청해주세요.')
         else:
             return Document.objects.filter(student=student_id, document_type__name=document_type_name).order_by('-upload_date')
+        
+class DocumentUnsuitView(ListAPIView):
+    serializer_class = DocumentDetailSerializer
+
+    def get_queryset(self):
+        student_id = "20250000"
+        return Document.objects.filter(student=student_id, state='검토').order_by('-upload_date')
