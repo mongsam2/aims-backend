@@ -26,7 +26,7 @@ class DocumentUploadView(GenericAPIView, CreateModelMixin):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            document = serializer.save()
+            document = serializer.save(state="검토")
         
         api_key = settings.UPSTAGE_API_KEY
         excuted_text, confidence = execute_ocr(api_key, document.file.file)
@@ -43,5 +43,6 @@ class DocumentUploadView(GenericAPIView, CreateModelMixin):
         document.extraction = excuted_text
         document.document_type = document_type
         document.student = student
+        document.state = "제출"
         document.save()
-        return Response({"detail": "성공이야"})
+        return Response(serializer.data, status=201)
