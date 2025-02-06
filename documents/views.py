@@ -35,11 +35,13 @@ class DocumentUploadView(GenericAPIView, CreateModelMixin):
 
         try:
             default_student = Student.objects.get(name="무명이")
+            default_document_type = DocumentType.objects.get(name="해당없음")
             document.student = default_student
+            document.document_type = default_document_type
             document.extraction = excuted_text
             document.save()
         except Student.DoesNotExist:
-            raise NotFound("무명이 학생이 존재하지 않습니다.")
+            raise NotFound("'무명이'와 '해당없음' 이 존재하지 않습니다.")
         
         try:
             student = Student.objects.get(id=student_id)
