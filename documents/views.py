@@ -27,11 +27,20 @@ class DocumentUploadView(GenericAPIView, CreateModelMixin):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             document = serializer.save(state="검토")
-        
+
         api_key = settings.UPSTAGE_API_KEY
         excuted_text, confidence = execute_ocr(api_key, document.file.file)
         document_type, confidence = predict_document_type(document.file.path)
         student_id = extract_student_number(excuted_text)[1]
+
+        try:
+            default_student = Student.objects.get(name="무명이")
+            document.student = default_student
+            document.extraction = excuted_text
+            document.save()
+        except Student.DoesNotExist:
+            raise NotFound("무명이 학생이 존재하지 않습니다.")
+        
         try:
             student = Student.objects.get(id=student_id)
         except Student.DoesNotExist:
@@ -40,7 +49,7 @@ class DocumentUploadView(GenericAPIView, CreateModelMixin):
             document_type = DocumentType.objects.get(name=document_type)
         except DocumentType.DoesNotExist:
             raise NotFound(f"판별한 {document_type}이 존재하지 않습니다.")
-        document.extraction = excuted_text
+        
         document.document_type = document_type
         document.student = student
         document.state = "제출"

@@ -10,6 +10,8 @@ from PIL import Image
 from torchvision import transforms
 from pdf2image import convert_from_path
 
+import re
+
 
 MODEL_DIR = os.path.join(settings.BASE_DIR, "parameters")
 
@@ -107,3 +109,21 @@ def preprocess_image(file_path):
     print(f"🗑️ 변환된 이미지 삭제 완료: {file_path}")
 
     return image
+
+def extract_student_number(content):
+    """
+    입력된 문자열에서 '수험번호' 패턴 이후의 8자리 숫자를 찾아 반환하는 함수.
+    """
+    
+    patterns = [
+        r"(수\s?험\s?번\s?호\s?)?(\d{8})",
+        r"(\d{8})"
+    ]
+
+    nums = []
+
+    for pattern in patterns:
+        matches = re.findall(pattern, content)
+        nums.extend(matches)
+ 
+    return list(set(nums))
