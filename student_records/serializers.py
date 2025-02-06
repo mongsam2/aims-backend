@@ -21,3 +21,8 @@ class StudentRecordMemoSerializer(ModelSerializer):
     class Meta:
         model = StudentRecord
         fields = ("memo",)
+
+class StudentRecordScoreSerializer(ModelSerializer):
+    class Meta:
+        model = StudentRecord
+        fields = ("score1", "score2", "score3", "score4",)

@@ -8,6 +8,10 @@ class StudentRecord(CommonDocument):
     '''
     student = models.ForeignKey('students.Student', on_delete=models.CASCADE, related_name="student_records")
     summarization = models.OneToOneField('Summarization', on_delete=models.SET_NULL, null=True, blank=True, related_name='student_record')
+    score1 = models.IntegerField(default=0)
+    score2 = models.IntegerField(default=0)
+    score3 = models.IntegerField(default=0)
+    score4 = models.IntegerField(default=0)
 
 class Summarization(models.Model):
     '''
