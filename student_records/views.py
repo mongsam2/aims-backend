@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 # Serializers
-from .serializers import StudentRecordsSerializer, StudentRecordDetailSerializer, StudentRecordMemoSerializer
+from .serializers import StudentRecordsSerializer, StudentRecordDetailSerializer, StudentRecordMemoSerializer, StudentRecordScoreSerializer
 
 # Models
 from .models import StudentRecord, Summarization
@@ -100,6 +100,12 @@ class StudentRecordDetailView(RetrieveUpdateAPIView):
 
 class StudentRecordMemoView(UpdateAPIView):
     serializer_class = StudentRecordMemoSerializer
+    queryset = StudentRecord.objects.all()
+    lookup_field = 'id'
+    http_method_names = ['patch']
+
+class StudentRecordScoreView(UpdateAPIView):
+    serializer_class = StudentRecordScoreSerializer
     queryset = StudentRecord.objects.all()
     lookup_field = 'id'
     http_method_names = ['patch']
