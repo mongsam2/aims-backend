@@ -9,6 +9,7 @@ from PIL import Image
 
 from torchvision import transforms
 from pdf2image import convert_from_path
+from .upstage import get_answer_from_solar
 
 import re
 
@@ -130,3 +131,39 @@ def extract_student_number(content):
         return nums[0]
     else:
         return "20250000"
+
+
+def assign_student_id_and_document_type(content):
+    """
+    Extraction 테이블에 값이 저장되면 Signal이 트리거됨.
+    
+    1. OCR에서 추출한 학생 이름을 기반으로 Student ID 할당
+    2. ValidationCriteria에서 문서 유형을 찾아 DocumentType 테이블에서 검색 후 Documentation에 설정
+    """
+    api_key = settings.API_KEY
+
+    prompt = '넌 지금 서류의 주인이 누군지 찾고 서류 발행일자를 알아내서 쉼표로 구분한 문자열로 반환해줘야 해. 서류 주인의 이름을 문자열로 첫 번째에, 발행일자를 "YYYY-MM-DD" 형식 문자열로 두 번째에 반환하는데, 서류 주인의 생년월일과 헷갈리지 말고 서류를 발행한 날짜를 반환해줘'
+    answer = get_answer_from_solar(api_key, content, prompt)
+
+    answer_list = list(answer.split(", "))
+
+    extracted_names = answer_list[0].rstrip()
+    date = answer_list[1].rstrip()
+
+    '''print(answer)
+    print(extracted_names, date)
+
+    documentation = Document.objects.filter(extraction=instance).first()'''
+
+    '''if not documentation:
+        print("연결된 Documentation을 찾을 수 없습니다.")
+        return'''
+    return extracted_names, date
+    # 1. 학생 ID 찾기
+    if extracted_names:
+        for student_name in extracted_names:
+            student = Student.objects.filter(name=student_name).first()
+            if student:
+                return student.id, date
+            else:
+                return "20250000", date

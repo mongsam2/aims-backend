@@ -9,7 +9,7 @@ from .serializers import DocumentUploadSerializer
 
 # Utils
 from utils.upstage import execute_ocr
-from utils.document import predict_document_type, extract_student_number
+from utils.document import predict_document_type, extract_student_number, assign_student_id_and_document_type
 from django.conf import settings
 import os
 
@@ -31,7 +31,7 @@ class DocumentUploadView(GenericAPIView, CreateModelMixin):
         api_key = settings.UPSTAGE_API_KEY
         excuted_text, confidence = execute_ocr(api_key, document.file.file)
         document_type, confidence = predict_document_type(document.file.path)
-        student_id = extract_student_number(excuted_text)[0]
+        student_id, date = assign_student_id_and_document_type(excuted_text)
 
         try:
             default_student = Student.objects.get(name="무명이")
