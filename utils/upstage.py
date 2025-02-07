@@ -1,5 +1,6 @@
 import requests
 from openai import OpenAI # openai==1.52.2
+from openai.error import InvalidRequestError
 
 
 def execute_ocr(api_key, file):
