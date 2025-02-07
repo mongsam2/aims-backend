@@ -21,11 +21,10 @@ class DocumentSerializer(ModelSerializer):
 
 class DocumentDetailSerializer(ModelSerializer):
     document_type = SerializerMethodField()
-    student = PrimaryKeyRelatedField(queryset=Student.objects.all(), write_only=True)
 
     class Meta:
         model = Document
-        fields = ("document_type", "state", "file", "student")
+        fields = ("id", "document_type", "state", "file", "student")
     
     def get_document_type(self, document):
         return document.document_type.name

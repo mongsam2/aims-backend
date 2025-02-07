@@ -37,4 +37,4 @@ class DocumentUnsuitView(ListAPIView):
 
     def get_queryset(self):
         student_id = "20250000"
-        return Document.objects.filter(student=student_id, state='검토').order_by('-upload_date')
+        return Document.objects.filter(state='검토').order_by('-upload_date')
