@@ -11,6 +11,8 @@ from torchvision import transforms
 from pdf2image import convert_from_path
 from .upstage import get_answer_from_solar
 
+from students.models import Student
+
 import re
 
 
@@ -140,9 +142,15 @@ def assign_student_id_and_document_type(content):
     1. OCR에서 추출한 학생 이름을 기반으로 Student ID 할당
     2. ValidationCriteria에서 문서 유형을 찾아 DocumentType 테이블에서 검색 후 Documentation에 설정
     """
-    api_key = settings.API_KEY
+    api_key = settings.UPSTAGE_API_KEY
 
-    prompt = '넌 지금 서류의 주인이 누군지 찾고 서류 발행일자를 알아내서 쉼표로 구분한 문자열로 반환해줘야 해. 서류 주인의 이름을 문자열로 첫 번째에, 발행일자를 "YYYY-MM-DD" 형식 문자열로 두 번째에 반환하는데, 서류 주인의 생년월일과 헷갈리지 말고 서류를 발행한 날짜를 반환해줘'
+    prompt = '''넌 OCR로 입시 서류에서 추출한 텍스트를 읽고 지원자의 이름, 
+    즉 이 서류를 제출한 사람의 이름이 누구인지 유추하는 <제출자 이름 추출기야>. 
+    서류 주인의 이름(지원자 이름)을 문자열로 첫 번째에, 발행일자를 "YYYY-MM-DD" 형식 문자열로 두 번째에 반환해.
+    반환 형식 예: "홍길동, 2022-01-01", "송재현, 2022-01-00".
+    주의해야할 점: 1.서류 주인의 이름은 보통 한글로 된 세 글자 이름이야. 그리고 "성명: 홍길동" "지원자: 송재현" 이런 식으로 입력 텍스트에 들어있을 거야.
+    2. 보통 한국 사람의 이름으로는 "송재현", "김민성", "강민지", "이종원", "윤현주", "송가은" 이런 세 글자로 되어있어.
+    3. 너는 반드시 보통의 한국 사람 이름의 형식으로 반환해야 돼. "/", "", "김", "송", "차", "*" 이런 식으로 이름을 찾아서는 안돼'''
     answer = get_answer_from_solar(api_key, content, prompt)
 
     answer_list = list(answer.split(", "))
@@ -150,20 +158,8 @@ def assign_student_id_and_document_type(content):
     extracted_names = answer_list[0].rstrip()
     date = answer_list[1].rstrip()
 
-    '''print(answer)
-    print(extracted_names, date)
-
-    documentation = Document.objects.filter(extraction=instance).first()'''
-
-    '''if not documentation:
-        print("연결된 Documentation을 찾을 수 없습니다.")
-        return'''
-    return extracted_names, date
-    # 1. 학생 ID 찾기
-    if extracted_names:
-        for student_name in extracted_names:
-            student = Student.objects.filter(name=student_name).first()
-            if student:
-                return student.id, date
-            else:
-                return "20250000", date
+    student = Student.objects.filter(name__icontains=extracted_names).first()
+    if student:
+        return student.id, date, extracted_names
+    else:
+        return "20250000", date, extracted_names
