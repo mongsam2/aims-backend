@@ -9,7 +9,7 @@ from .serializers import DocumentUploadSerializer
 
 # Utils
 from utils.upstage import execute_ocr
-from utils.document import predict_document_type, extract_student_number
+from utils.document import predict_document_type, extract_student_number, assign_student_id_and_document_type
 from django.conf import settings
 import os
 
@@ -31,7 +31,7 @@ class DocumentUploadView(GenericAPIView, CreateModelMixin):
         api_key = settings.UPSTAGE_API_KEY
         excuted_text, confidence = execute_ocr(api_key, document.file.file)
         document_type, confidence = predict_document_type(document.file.path)
-        student_id = extract_student_number(excuted_text)[0]
+        student_id, date, student_name = assign_student_id_and_document_type(excuted_text)
 
         try:
             default_student = Student.objects.get(name="무명이")
@@ -43,17 +43,13 @@ class DocumentUploadView(GenericAPIView, CreateModelMixin):
         except Student.DoesNotExist:
             raise NotFound("'무명이'와 '해당없음' 이 존재하지 않습니다.")
         
-        try:
-            student = Student.objects.get(id=student_id)
-        except Student.DoesNotExist:
-            raise NotFound(f"학생번호 {student_id}에 해당하는 학생이 존재하지 않습니다.")
-        try:
-            document_type = DocumentType.objects.get(name=document_type)
-        except DocumentType.DoesNotExist:
-            raise NotFound(f"판별한 {document_type}이 존재하지 않습니다.")
-        
-        document.document_type = document_type
-        document.student = student
-        document.state = "제출"
+        student = Student.objects.filter(id=student_id).first()
+        document_type = DocumentType.objects.filter(name=document_type).first()
+        if student:
+            document.student = student
+        if document_type:
+            document.document_type = document_type
+        if student and document_type:
+            document.state = "제출"
         document.save()
-        return Response(serializer.data, status=201)
+        return Response({"student_name": student_name, "date": date}, status=201)
