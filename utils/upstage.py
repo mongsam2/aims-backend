@@ -28,20 +28,23 @@ def get_answer_from_solar(api_key, content, prompt, temperature=0.7):
         base_url="https://api.upstage.ai/v1/solar"
     )
 
-    response = client.chat.completions.create(
-        model="solar-pro",
-        messages=[
-        {
-            "role": "system",
-            "content": prompt
-        },
-        {
-            "role": "user",
-            "content": content
-        }
-    ],
-        stream=False,
-        temperature=temperature
-    )
+    try:
+        response = client.chat.completions.create(
+            model="solar-pro",
+            messages=[
+                {
+                    "role": "system",
+                    "content": prompt
+                },
+                {
+                    "role": "user",
+                    "content": content
+                }
+            ],
+            stream=False,
+            temperature=temperature
+        )
+    except InvalidRequestError as e:
+        raise ValueError(f"Invalid request body: {e}")
 
     return response.choices[0].message.content
