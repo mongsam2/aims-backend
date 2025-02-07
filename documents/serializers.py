@@ -27,7 +27,7 @@ class DocumentDetailSerializer(ModelSerializer):
         fields = ("id", "document_type", "state", "file", "student")
     
     def get_document_type(self, document):
-        if document is None:
+        if document is None or document.document_type is None:
             return None
         return document.document_type.name
 
