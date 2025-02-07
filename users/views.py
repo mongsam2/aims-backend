@@ -12,6 +12,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 class RegisterView(CreateAPIView):
@@ -32,12 +33,13 @@ class GetCSRFTokenView(APIView):
     def get(self, request):
         return Response({"message": "CSRF 토큰 설정됨."})
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class LogoutView(APIView):
     def post(self, request):
         logout(request)  # 세션 로그아웃 처리
         return Response({"message": "로그아웃 성공!"}, status=status.HTTP_200_OK)
-    
+
+@method_decorator(csrf_exempt, name='dispatch')
 class UserProfileView(RetrieveAPIView):
     serializer_class = UserSerializer
     def get_object(self):
