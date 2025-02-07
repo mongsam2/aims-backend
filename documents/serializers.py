@@ -28,3 +28,8 @@ class DocumentDetailSerializer(ModelSerializer):
     
     def get_document_type(self, document):
         return document.document_type.name
+
+class DocumentUpdateSerializer(ModelSerializer):
+    class Meta:
+        model = Document
+        fields = ("id", "document_type", "state", "file", "student")

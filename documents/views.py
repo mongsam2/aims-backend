@@ -5,7 +5,7 @@ from rest_framework.generics import GenericAPIView, UpdateAPIView
 from rest_framework.mixins import CreateModelMixin
 
 # Serializers
-from .serializers import DocumentUploadSerializer, DocumentDetailSerializer
+from .serializers import DocumentUploadSerializer, DocumentDetailSerializer, DocumentUpdateSerializer
 
 # Utils
 from utils.upstage import execute_ocr
@@ -56,7 +56,7 @@ class DocumentUploadView(GenericAPIView, CreateModelMixin):
         return Response({"student_name": student_name, "date": date}, status=201)
     
 class DocumentUpdateView(UpdateAPIView):
-    serializer_class = DocumentDetailSerializer
+    serializer_class = DocumentUpdateSerializer
     queryset = Document.objects.all()
     lookup_field = 'id'
     http_method_names = ["patch"]
