@@ -1,11 +1,11 @@
 # Views
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, UpdateAPIView
 from rest_framework.mixins import CreateModelMixin
 
 # Serializers
-from .serializers import DocumentUploadSerializer
+from .serializers import DocumentUploadSerializer, DocumentDetailSerializer
 
 # Utils
 from utils.upstage import execute_ocr
@@ -18,6 +18,7 @@ from rest_framework.exceptions import ParseError, NotFound
 
 from common.models import DocumentType
 from students.models import Student
+from .models import Document
 
 # Create your views here.
 class DocumentUploadView(GenericAPIView, CreateModelMixin):
@@ -53,3 +54,9 @@ class DocumentUploadView(GenericAPIView, CreateModelMixin):
             document.state = "제출"
         document.save()
         return Response({"student_name": student_name, "date": date}, status=201)
+    
+class DocumentUpdateView(UpdateAPIView):
+    serializer_class = DocumentDetailSerializer
+    queryset = Document.objects.all()
+    lookup_field = 'id'
+    http_method_names = ["patch"]

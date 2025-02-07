@@ -1,5 +1,6 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, PrimaryKeyRelatedField
 from .models import Document, DocumentPassFail
+from students.models import Student
 
 class DocumentUploadSerializer(ModelSerializer):
     class Meta:
@@ -16,14 +17,15 @@ class DocumentSerializer(ModelSerializer):
 
     class Meta:
         model = Document
-        fields = ('state', 'file', 'document_pass_fails')
+        fields = ('id', 'state', 'file', 'document_pass_fails')
 
 class DocumentDetailSerializer(ModelSerializer):
     document_type = SerializerMethodField()
+    student = PrimaryKeyRelatedField(queryset=Student.objects.all(), write_only=True)
 
     class Meta:
         model = Document
-        fields = ("document_type", "state", "file")
+        fields = ("document_type", "state", "file", "student")
     
     def get_document_type(self, document):
         return document.document_type.name
