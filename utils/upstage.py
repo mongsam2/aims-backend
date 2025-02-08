@@ -22,7 +22,7 @@ def execute_ocr(api_key, file):
         return "Upstage OCR API 요청에 실패했습니다."
 
 
-def get_answer_from_solar(api_key, content, prompt, temperature=0.7):
+'''def get_answer_from_solar(api_key, content, prompt, temperature=0.7):
     client = OpenAI(
         api_key=api_key,
         base_url="https://api.upstage.ai/v1/solar"
@@ -44,4 +44,26 @@ def get_answer_from_solar(api_key, content, prompt, temperature=0.7):
         temperature=temperature
     )
 
-    return response.choices[0].message.content
+    return response.choices[0].message.content'''
+
+def get_answer_from_solar(api_key, content, prompt, temperature=0.7):
+    url = "https://api.upstage.ai/v1/solar/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "model": "solar-pro",
+        "messages": [
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": content}
+        ],
+        "temperature": temperature
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+
+    if response.status_code == 200:
+        return response.json()["choices"][0]["message"]["content"]
+    else:
+        raise Exception(f"Error code: {response.status_code} - {response.json()}")

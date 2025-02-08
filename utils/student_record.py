@@ -9,7 +9,8 @@ def summarization_content(extraction, api_key):
         prompt_file = os.path.join(settings.BASE_DIR, 'prompts', 'summarization.txt')  
         with open(prompt_file, 'r', encoding='utf-8') as file:
             prompt_content = file.read()
-        
+        extraction = str(extraction)
+        prompt_content = str(prompt_content)
         response = get_answer_from_solar(api_key, extraction, prompt_content)
 
         return response
@@ -19,7 +20,8 @@ def summarization_question(extraction, api_key):
     prompt_file = os.path.join(settings.BASE_DIR, 'prompts', 'question.txt')  
     with open(prompt_file, 'r', encoding='utf-8') as file:
         prompt_content = file.read()
-
+    prompt_content = str(prompt_content)
+    extraction = str(extraction)
     response = get_answer_from_solar(api_key, extraction, prompt_content)
 
     return response
