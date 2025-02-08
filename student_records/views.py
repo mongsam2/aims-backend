@@ -68,7 +68,8 @@ class StudentRecordsView(GenericAPIView, CreateModelMixin, ListModelMixin):
         extraction = execute_ocr(api_key, file.file)
 
         # 생기부 요약, 질문 추출
-        content = summarization_content(extraction, api_key)
+        department = student.department.name
+        content = summarization_content(extraction, api_key, department)
         question = summarization_question(extraction, api_key)
         summarization = Summarization.objects.create(content=content, question=question)
         
