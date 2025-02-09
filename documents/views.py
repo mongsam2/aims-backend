@@ -1,11 +1,10 @@
 # Views
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView, UpdateAPIView
 from rest_framework.mixins import CreateModelMixin
 
 # Serializers
-from .serializers import DocumentUploadSerializer, DocumentDetailSerializer, DocumentUpdateSerializer
+from .serializers import DocumentUploadSerializer, DocumentUpdateSerializer, DocumentPassFailSerializer
 
 # Utils
 from utils.upstage import execute_ocr
@@ -62,5 +61,11 @@ class DocumentUploadView(GenericAPIView, CreateModelMixin):
 class DocumentUpdateView(UpdateAPIView):
     serializer_class = DocumentUpdateSerializer
     queryset = Document.objects.all()
+    lookup_field = 'id'
+    http_method_names = ["patch"]
+
+class PassFailPatchView(UpdateAPIView):
+    serializer_class = DocumentPassFailSerializer
+    queryset = DocumentPassFail.objects.all()
     lookup_field = 'id'
     http_method_names = ["patch"]
