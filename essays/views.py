@@ -75,11 +75,16 @@ class EssaysView(GenericAPIView, CreateModelMixin, ListModelMixin):
         api_key = settings.UPSTAGE_API_KEY
         
         # OCR 추출
+        threshold = 0.8
         extraction, confidence = execute_ocr(api_key, file.file)
         evaluation, penalty = evaluate(api_key, extraction, criteria)
 
         # 논술 파일용 전처리
-        extraction = process_ocr_task_for_essay(api_key, extraction, confidence)
+        
+        if confidence <= threshold:
+            extraction = f'경고: OCR 신뢰도가 낮습니다 ({confidence:.2f}). 텍스트가 부정확할 수 있습니다.\n'
+        else:
+            extraction = process_ocr_task_for_essay(api_key, extraction, confidence)
         
         return self.create(
             request, 
