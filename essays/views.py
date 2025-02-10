@@ -15,7 +15,7 @@ from common.models import DocumentType
 
 # Utils
 from utils.upstage import execute_ocr
-from utils.essay import evaluate, process_ocr_task_for_essay
+from utils.essay import evaluate, process_ocr_task_for_essay, preprocess_pdf
 
 # Exceptions
 from rest_framework.exceptions import NotFound, NotAcceptable, ParseError
@@ -37,6 +37,9 @@ class EssaysView(GenericAPIView, CreateModelMixin, ListModelMixin):
         file = request.data.get('file')
         if not file:
             raise ParseError("파일을 첨부해주세요.")
+        
+
+        
         splited_file_name = file.name.split('_')
         if len(splited_file_name) != 2:
             raise NotAcceptable("파일 이름이 올바르지 않습니다.")
@@ -98,12 +101,13 @@ class EssaysView(GenericAPIView, CreateModelMixin, ListModelMixin):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer, *args, **kwargs)    
+        essay = self.perform_create(serializer, *args, **kwargs)
+        preprocess_pdf(essay.file.path, essay.file.path)
         headers = self.get_success_headers(serializer.data) 
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
     def perform_create(self, serializer, *args, **kwargs):
-        serializer.save(**kwargs)
+        return serializer.save(**kwargs)
 
 
 class EssayDetailView(RetrieveAPIView):
