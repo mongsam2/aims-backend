@@ -35,21 +35,19 @@ class S3PresignedUrlView(APIView):
             region_name=settings.AWS_REGION_NAME,
         )
 
-        presigned_post = s3_client.generate_presigned_post(
-            Bucket=settings.AWS_BUCKET_NAME,
-            Key=s3_key,
-            Fields={
-                "Content-Type": file_type,
+        presigned_url = s3_client.generate_presigned_url(
+            "put_object",
+            Params={
+                "Bucket": settings.AWS_BUCKET_NAME,
+                "Key": s3_key,
+                "ContentType": file_type,
             },
-            Conditions=[
-                {"Content-Type": file_type},
-            ],
             ExpiresIn=3600,
         )
 
         return Response(
             {
-                "url": presigned_post["url"],
+                "url": presigned_url,
                 "key": s3_key,  # 프론트가 업로드 후 저장할 경로 참조
             },
             status=200,
