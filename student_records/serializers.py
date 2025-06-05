@@ -1,28 +1,63 @@
-from rest_framework.serializers import ModelSerializer
-from .models import StudentRecord, Summarization
+from rest_framework import serializers
+from .models import (
+    StudentRecord,
+    StudentRecordEvaluationScore,
+    StudentRecordEvaluationCategory,
+)
 
-class StudentRecordsSerializer(ModelSerializer):
+
+class StudentRecordRequestSerializer(serializers.Serializer):
+    student_id = serializers.CharField(max_length=8)
+    student_name = serializers.CharField(max_length=10)
+    department = serializers.CharField(max_length=20)
+    application_type = serializers.CharField(max_length=10)
+    ocr_text = serializers.CharField()
+    file = serializers.CharField()
+    evaluation_category_id = serializers.IntegerField()
+
+
+class StudentRecordListSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentRecord
-        fields = ("id", "file",)
+        fields = ("id",)
 
-class SummarizationSerializer(ModelSerializer):
-    class Meta:
-        model = Summarization
-        exclude = ("id",)
 
-class StudentRecordDetailSerializer(ModelSerializer):
-    summarization = SummarizationSerializer()
-    class Meta:
-        model = StudentRecord
-        fields = "__all__"
+class StudentRecordDetailSerializer(serializers.ModelSerializer):
 
-class StudentRecordMemoSerializer(ModelSerializer):
-    class Meta:
-        model = StudentRecord
-        fields = ("memo",)
+    class StudentRecordEvaluationScoreSerializer(serializers.ModelSerializer):
+        evaluation_id = serializers.IntegerField(source="id")
+        title = serializers.CharField(source="question.title")
+        description = serializers.CharField(source="question.description")
 
-class StudentRecordScoreSerializer(ModelSerializer):
+        class Meta:
+            model = StudentRecordEvaluationScore
+            fields = ("evaluation_id", "title", "description", "score")
+
+    evaluation_questions = StudentRecordEvaluationScoreSerializer(many=True)
+
     class Meta:
         model = StudentRecord
-        fields = ("score1", "score2", "score3", "score4",)
+        fields = (
+            "file",
+            "memo",
+            "summary",
+            "interview_questions",
+            "evaluation_questions",
+        )
+
+
+class StudentRecordPatchSerializer(serializers.Serializer):
+
+    class StudentRecordEvaluationScoreSerializer(serializers.Serializer):
+        evaluation_id = serializers.IntegerField()
+        score = serializers.IntegerField()
+
+    memo = serializers.CharField()
+    evaluations = StudentRecordEvaluationScoreSerializer(many=True)
+
+
+class StudentRecordEvaluationCategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = StudentRecordEvaluationCategory
+        fields = ("id", "category_name")

@@ -1,29 +1,43 @@
-Write 5 interview questions using Korean with the student record refering to the example wrt a form of the answer.
-1. a basic question (self-introduction, motivation, strengths, academic plans)
-2. a fact-checking question (verification and analysis of student records)
-3. a subject-specific question (assessing knowledge of relevant coursework)
-4. a critical thinking question (opinions on current affairs or debates)
-5. a miscellaneous question (values, thoughts, and experiences of the candidate). 
+당신은 대입 면접관입니다. 아래의 학생부를 바탕으로 다음과 같은 5가지 유형의 면접 질문을 한국어로 작성해주세요.
 
-1~3th for general question, 4~5th for specific question for candidate.
+1. **기초 질문**  
+   - 자기소개, 지원 동기, 성격의 장점, 학업 계획 등 학생의 전반적인 동기를 파악하는 질문
 
-<Interview questions>
----Response Format---
-1. 
-2. 
-3. 
-4.
-5.
+2. **사실 확인 질문**  
+   - 학생부에 기재된 활동, 수상, 교과세특, 자율/진로활동 등의 구체적인 내용을 검증하고 활동 배경을 묻는 질문
+
+3. **전공 적합성 질문**  
+   - 학생의 진로희망 학과 및 관련 교과 지식을 기반으로 전공과의 연관성을 평가하는 질문
+
+4. **비판적 사고 질문**  
+   - 사회적 이슈, 시사 혹은 전공 관련 토픽에 대해 학생의 의견과 논리를 확인하는 질문
+
+5. **개인 가치관 및 경험 질문**  
+   - 가치관, 신념, 태도, 생활 속 경험 등을 통해 인성 및 소양을 평가하는 개방형 질문
+
+질문 1~3번은 **일반적인 면접 문항**, 4~5번은 **지원자 맞춤형 심화 문항**이어야 합니다.  
+모든 질문은 실제 면접에서 사용할 수 있도록 자연스럽고 명확한 문장으로 작성해주세요.  
+학생의 진로 희망 학과나 활동 특성에 따라 질문을 맞춤화하고, 필요 시 배경 설명을 간단히 덧붙여도 됩니다.
+
+**출력은 아래 형식을 지켜주세요:**
+
+<Interview questions>  
+---Response Format---  
+1.  
+2.  
+3.  
+4.  
+5.  
 </Interview questions>
 
-<example>
-1. 자기소개와 함께 행정학에 관심을 갖게 된 계기, 그리고 앞으로의 학업 계획에 대해 말씀해주세요.
-2. 학생 기록부에 따르면, 교내 정책 제안 경연대회에서 최우수상을 수상하셨는데요. 어떤 정책을 제안하셨고, 그 과정에서 어떤 역할을 맡으셨나요?
-3. 행정학에 대한 이해를 바탕으로, 현재 한국 사회에서 가장 중요한 행정적 이슈는 무엇이라고 생각하시나요? 그 이유를 설명해주세요.
-4. 최근 행정학 분야에서 주목받고 있는 '데이터 기반 정책 설계'에 대해 어떻게 생각하시나요? 이 접근법이 행정학에 어떤 영향을 미칠 것으로 예상하시나요?
-5. 행정학 분야에서 일하면서 가장 중요하게 생각하는 가치나 신념이 있다면 무엇인가요?
+<example>  
+1. 자기소개와 함께 행정학에 관심을 갖게 된 계기, 그리고 앞으로의 학업 계획에 대해 말씀해주세요.  
+2. 학생 기록부에 따르면, 교내 정책 제안 경연대회에서 최우수상을 수상하셨는데요. 어떤 정책을 제안하셨고, 그 과정에서 어떤 역할을 맡으셨나요?  
+3. 행정학에 대한 이해를 바탕으로, 현재 한국 사회에서 가장 중요한 행정적 이슈는 무엇이라고 생각하시나요? 그 이유를 설명해주세요.  
+4. 최근 행정학 분야에서 주목받고 있는 '데이터 기반 정책 설계'에 대해 어떻게 생각하시나요? 이 접근법이 행정학에 어떤 영향을 미칠 것으로 예상하시나요?  
+5. 행정학 분야에서 일하면서 가장 중요하게 생각하는 가치나 신념이 있다면 무엇인가요?  
 </example>
 
-<Student record> 
-{text}
+<Student record>  
+{text}  
 </Student record>

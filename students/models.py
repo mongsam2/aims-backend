@@ -1,34 +1,33 @@
 from django.db import models
 
+
+class StudentManager(models.Manager):
+    def get_or_create(
+        self, student_id: str, student_name: str, department: str, application_type: str
+    ):
+        try:
+            return self.get(
+                code=student_id,
+                department=department,
+                application_type=application_type,
+            )
+        except:
+            return self.create(
+                code=student_id,
+                name=student_name,
+                department=department,
+                application_type=application_type,
+            )
+
+
 # Create your models here.
-class Department(models.Model):
-    '''
-    대학에 있는 학과들의 정보를 담은 모델
-    '''
-    name = models.CharField(max_length=50, unique=True)
-
-    def __str__(self):
-        return self.name
-
-class ApplicantType(models.Model):
-    '''
-    대학 지원 유형들의 정보를 담은 모델
-    '''
-    name = models.CharField(max_length=50, unique=True)
-
-    def __str__(self):
-        return self.name
-
 class Student(models.Model):
-    '''
-    대학에 지원한 학생들의 정보를 저장하는 모델
-    '''
-    id = models.CharField(primary_key=True, max_length=8)
+    code = models.CharField(max_length=8, unique=True)
     name = models.CharField(max_length=10)
-    phone = models.CharField(max_length=11)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
-    applicant_type = models.ForeignKey(ApplicantType, on_delete=models.CASCADE, to_field='name')
-    required_documents = models.ManyToManyField('common.DocumentType', null=True, blank=True)
+    department = models.CharField(max_length=20)
+    application_type = models.CharField(max_length=10)
 
-    def __str__(self):
-        return f"{self.id} {self.name}"
+    objects = StudentManager()
+
+    class Meta:
+        db_table = "student"
