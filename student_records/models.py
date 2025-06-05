@@ -1,6 +1,12 @@
 from django.db import models
 
 
+# Manager
+class StudentRecordEvaluationScoreManager(models.Manager):
+    def get_queryset(self):
+        return self.get_queryset().select_related("question")
+
+
 # Create your models here.
 class StudentRecordEvaluationCategory(models.Model):
     category_name = models.CharField(max_length=100)
@@ -34,14 +40,4 @@ class StudentRecord(models.Model):
         "students.Student", on_delete=models.CASCADE, db_column="student_id"
     )
 
-
-class StudentRecordEvaluationScore(models.Model):
-    score = models.PositiveIntegerField(null=True)
-    student_record = models.ForeignKey(
-        StudentRecord, on_delete=models.CASCADE, db_column="student_record_id"
-    )
-    question = models.ForeignKey(
-        StudentRecordEvaluationQuestion,
-        on_delete=models.CASCADE,
-        db_column="question_id",
-    )
+    objects = StudentRecordEvaluationScoreManager()
