@@ -10,3 +10,6 @@ class Document(models.Model):
     student = models.ForeignKey(
         "students.Student", on_delete=models.CASCADE, db_column="student_id"
     )
+
+    class Meta:
+        db_table = "document"

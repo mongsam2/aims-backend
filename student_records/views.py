@@ -1,111 +1,85 @@
-# Views
-from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, UpdateAPIView
-from rest_framework.mixins import CreateModelMixin, ListModelMixin
-from rest_framework.response import Response
-from rest_framework import status
-
-# Serializers
-from .serializers import StudentRecordsSerializer, StudentRecordDetailSerializer, StudentRecordMemoSerializer, StudentRecordScoreSerializer
-
-# Models
-from .models import StudentRecord, Summarization
+from rest_framework.views import APIView
+from . import serializers
 from students.models import Student
-from common.models import DocumentType
+from .models import (
+    StudentRecord,
+    StudentRecordEvaluationCategory,
+    StudentRecordEvaluationScore,
+)
+from django.shortcuts import get_object_or_404
+from rest_framework.response import Response
+from utils.upstage import call_upstage_llm
 
-# Utils
-from utils.upstage import execute_ocr
-from utils.student_record import summarization_content, summarization_question
 
-# Exceptions
-from rest_framework.exceptions import NotFound, NotAcceptable, ParseError
-
-# Settings
-from django.conf import settings
-
-# Create your views here.
-class StudentRecordsView(GenericAPIView, CreateModelMixin, ListModelMixin):
-    serializer_class = StudentRecordsSerializer
-    queryset = StudentRecord.objects.filter(state="제출")
-
+class StudentRecordsView(APIView):
     def get(self, request):
-        '''
-        제출된 학생생활기록부 목록을 반환하는 API
-        '''
-        return self.list(request)
+        student_records = StudentRecord.objects.values_list("id", flat=True)
+        return Response(student_records, status=200)
 
     def post(self, request):
-        '''
-        학생생활기록부를 업로드하는 API
-            - 파일 이름에 들어있는 수험번호가 현재 존재하지 않으면 404 에러를 반환
-        '''
-        file = request.data.get('file')
-        if not file:
-            raise ParseError("파일을 첨부해주세요.")
-        splited_file_name = file.name.split('_')
-        if len(splited_file_name) != 2:
-            raise NotAcceptable("파일 이름이 올바르지 않습니다.")
-        id, _ = splited_file_name
+        serializer = serializers.StudentRecordRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
 
-        # 수험번호 검증
-        try:
-            student = Student.objects.get(id=id)
-        except Student.DoesNotExist:
-            raise NotFound(f"{id} 학생을 DB에서 찾을 수 없습니다.")
-        
-        # 기존에 제출 완료된 생기부가 존재 여부 검증
-        if StudentRecord.objects.filter(student=student, state="제출").exists():
-            raise NotAcceptable(f"{id} 학생의 생기부가 이미 제출되었습니다.")
-        
-        # DocumentType 검증
-        try:
-            document_type = DocumentType.objects.get(name='학생생활기록부')
-        except DocumentType.DoesNotExist:
-            raise NotFound("DocumentType에서'학생생활기록부'을 찾을 수 없습니다.")
-        
-        api_key = settings.UPSTAGE_API_KEY
+            student = Student.objects.get_or_create(
+                student_id=data["student_id"],
+                student_name=data["student_name"],
+                department=data["department"],
+                application_type=data["application_type"],
+            )
 
-        # OCR 추출
-        extraction = execute_ocr(api_key, file.file)
+            evaluation_category = get_object_or_404(
+                StudentRecordEvaluationCategory, id=data["evaluation_category_id"]
+            )
 
-        # 생기부 요약, 질문 추출
-        content = summarization_content(extraction, api_key)
-        question = summarization_question(extraction, api_key)
-        summarization = Summarization.objects.create(content=content, question=question)
-        
-        return self.create(
-            request, 
-            student=student, 
-            document_type=document_type, 
-            extraction=extraction, 
-            summarization=summarization,
-            state="제출"
+            summary = call_upstage_llm("summarization.txt", data["ocr_text"])
+            interview_questions = call_upstage_llm("question.txt", data["ocr_text"])
+
+            student_record = StudentRecord(
+                ocr_text=data["ocr_text"],
+                file=data["file"],
+                summary=summary,
+                interview_questions=interview_questions,
+                evaluation_category=evaluation_category,
+                student=student,
+            )
+            student_record.save()
+
+            return Response("생활기록부 업로드 성공", status=201)
+        else:
+            return Response(serializer.errors, status=400)
+
+
+class StudentRecordDetailView(APIView):
+    def get(self, request, student_record_id):
+        student_record = get_object_or_404(StudentRecord, id=student_record_id)
+        serializer = serializers.StudentRecordDetailSerializer(student_record)
+        return Response(serializer.data, status=200)
+
+    def patch(self, request, student_record_id):
+        serializer = serializers.StudentRecordPatchSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            student_record = get_object_or_404(StudentRecord, id=student_record_id)
+
+            student_record.memo = data["memo"]
+            student_record.save()
+
+            for evaluation in data["evaluations"]:
+                score_instance = get_object_or_404(
+                    StudentRecordEvaluationScore, id=evaluation["evaluation_id"]
+                )
+                score_instance.score = evaluation["score"]
+                score_instance.save()
+
+        else:
+            return Response(serializer.errors, status=400)
+
+
+class StudentRecordEvaluationView(APIView):
+    def get(self, request):
+        categories = StudentRecordEvaluationCategory.objects.all()
+        serializer = serializers.StudentRecordEvaluationCategorySerializer(
+            categories, many=True
         )
-
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer, *args, **kwargs)    
-        headers = self.get_success_headers(serializer.data) 
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-    
-    def perform_create(self, serializer, *args, **kwargs):
-        serializer.save(**kwargs)
-
-class StudentRecordDetailView(RetrieveUpdateAPIView):
-    serializer_class = StudentRecordDetailSerializer
-    queryset = StudentRecord.objects.all()
-    lookup_field = 'id'
-    http_method_names = ['get']
-
-class StudentRecordMemoView(UpdateAPIView):
-    serializer_class = StudentRecordMemoSerializer
-    queryset = StudentRecord.objects.all()
-    lookup_field = 'id'
-    http_method_names = ['patch']
-
-class StudentRecordScoreView(UpdateAPIView):
-    serializer_class = StudentRecordScoreSerializer
-    queryset = StudentRecord.objects.all()
-    lookup_field = 'id'
-    http_method_names = ['patch']
+        return Response(serializer.data, status=200)

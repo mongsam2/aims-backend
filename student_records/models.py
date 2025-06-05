@@ -1,9 +1,18 @@
 from django.db import models
 
 
+# Manager
+class StudentRecordEvaluationScoreManager(models.Manager):
+    def get_queryset(self):
+        return self.get_queryset().select_related("question")
+
+
 # Create your models here.
 class StudentRecordEvaluationCategory(models.Model):
     category_name = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = "student_record_evaluation_category"
 
 
 class StudentRecordEvaluationQuestion(models.Model):
@@ -15,12 +24,15 @@ class StudentRecordEvaluationQuestion(models.Model):
         db_column="category_id",
     )
 
+    class Meta:
+        db_table = "student_record_evaluation_question"
+
 
 class StudentRecord(models.Model):
-    state = models.CharField(max_length=3)
+    state = models.CharField(max_length=3, default="제출")
     uploaded_date = models.DateField(auto_now_add=True)
     ocr_text = models.TextField(null=True)
-    file = models.URLField()
+    file = models.TextField()
     memo = models.TextField(null=True)
     summary = models.TextField(null=True)
     interview_questions = models.TextField(null=True)
@@ -34,6 +46,9 @@ class StudentRecord(models.Model):
         "students.Student", on_delete=models.CASCADE, db_column="student_id"
     )
 
+    class Meta:
+        db_table = "student_record"
+
 
 class StudentRecordEvaluationScore(models.Model):
     score = models.PositiveIntegerField(null=True)
@@ -45,3 +60,8 @@ class StudentRecordEvaluationScore(models.Model):
         on_delete=models.CASCADE,
         db_column="question_id",
     )
+
+    objects = StudentRecordEvaluationScoreManager()
+
+    class Meta:
+        db_table = "student_record_evaluation_score"
