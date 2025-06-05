@@ -12,6 +12,7 @@ class EssayRequestSerializer(serializers.Serializer):
 
 
 class EssayDetailSerializer(serializers.ModelSerializer):
+
     class EssayEvaluationScoreSerializer(serializers.ModelSerializer):
         evaluation_id = serializers.IntegerField(source="id")
         content = serializers.CharField(source="question.content")
@@ -30,3 +31,8 @@ class EssayDetailSerializer(serializers.ModelSerializer):
             "score_by_length",
             "evaluation_questions",
         )
+
+
+class EssayPatchSerializer(serializers.Serializer):
+    evaluation_id = serializers.IntegerField()
+    score = serializers.IntegerField()
