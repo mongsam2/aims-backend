@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from . import serializers
-from .models import Essay, EssayEvaluationCategory
+from .models import Essay, EssayEvaluationCategory, EssayEvaluationScore
 from students.models import Student
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
@@ -44,5 +44,28 @@ class EssaysView(APIView):
             )
 
             return Response("논술 답안지 업로드 성공", status=201)
+        else:
+            return Response(serializer.errors, status=400)
+        
+
+class EssayDetailView(APIView):
+    def get(self, request, student_record_id):
+        essay = get_object_or_404(Essay, id=student_record_id)
+        serializer = serializers.EssayDetailSerializer(essay)
+        return Response(serializer.data, status=200)
+
+    def patch(self, request, student_record_id):
+        serializer = serializers.EssayPatchSerializer(data=request.data, many=True)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            essay = get_object_or_404(Essay, id=student_record_id)
+
+            for evaluation in data:
+                score_instance = get_object_or_404(
+                    EssayEvaluationScore, id=evaluation["evaluation_id"]
+                )
+                score_instance.score = evaluation["score"]
+                score_instance.save()
+
         else:
             return Response(serializer.errors, status=400)
