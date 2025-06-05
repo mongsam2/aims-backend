@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-5$$6n@7vih=j-#!*-!cex8l&evn)gttq6e54aun57b#_ic(73h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost:3000"]
+ALLOWED_HOSTS = ["localhost"]
 
 
 # Application definition
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # third-party apps
     "rest_framework",
+    "corsheaders",
     # custom apps
     "essays.apps.EssaysConfig",
     "student_records.apps.StudentRecordsConfig",
