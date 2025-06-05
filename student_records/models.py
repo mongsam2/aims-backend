@@ -40,4 +40,16 @@ class StudentRecord(models.Model):
         "students.Student", on_delete=models.CASCADE, db_column="student_id"
     )
 
+
+class StudentRecordEvaluationScore(models.Model):
+    score = models.PositiveIntegerField(null=True)
+    student_record = models.ForeignKey(
+        StudentRecord, on_delete=models.CASCADE, db_column="student_record_id"
+    )
+    question = models.ForeignKey(
+        StudentRecordEvaluationQuestion,
+        on_delete=models.CASCADE,
+        db_column="question_id",
+    )
+
     objects = StudentRecordEvaluationScoreManager()
