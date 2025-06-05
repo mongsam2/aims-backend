@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import StudentRecord
+from .models import StudentRecord, StudentRecordEvaluationScore
 
 
 class StudentRecordRequestSerializer(serializers.Serializer):
@@ -13,7 +13,30 @@ class StudentRecordRequestSerializer(serializers.Serializer):
 
 
 class StudentRecordListSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = StudentRecord
         fields = ("id",)
+
+
+class StudentRecordEvaluationScoreSerializer(serializers.ModelSerializer):
+    evaluation_id = serializers.IntegerField(source="id")
+    title = serializers.CharField(source="question.title")
+    description = serializers.CharField(source="question.description")
+
+    class Meta:
+        model = StudentRecordEvaluationScore
+        fields = ("evaluation_id", "title", "description", "score")
+
+
+class StudentRecordDetailSerializer(serializers.ModelSerializer):
+    evaluation_questions = StudentRecordEvaluationScoreSerializer(many=True)
+
+    class Meta:
+        model = StudentRecord
+        fields = (
+            "file",
+            "memo",
+            "summary",
+            "interview_questions",
+            "evaluation_questions",
+        )
