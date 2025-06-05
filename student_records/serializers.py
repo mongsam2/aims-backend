@@ -18,17 +18,17 @@ class StudentRecordListSerializer(serializers.ModelSerializer):
         fields = ("id",)
 
 
-class StudentRecordEvaluationScoreSerializer(serializers.ModelSerializer):
-    evaluation_id = serializers.IntegerField(source="id")
-    title = serializers.CharField(source="question.title")
-    description = serializers.CharField(source="question.description")
-
-    class Meta:
-        model = StudentRecordEvaluationScore
-        fields = ("evaluation_id", "title", "description", "score")
-
-
 class StudentRecordDetailSerializer(serializers.ModelSerializer):
+
+    class StudentRecordEvaluationScoreSerializer(serializers.ModelSerializer):
+        evaluation_id = serializers.IntegerField(source="id")
+        title = serializers.CharField(source="question.title")
+        description = serializers.CharField(source="question.description")
+
+        class Meta:
+            model = StudentRecordEvaluationScore
+            fields = ("evaluation_id", "title", "description", "score")
+
     evaluation_questions = StudentRecordEvaluationScoreSerializer(many=True)
 
     class Meta:
@@ -40,3 +40,13 @@ class StudentRecordDetailSerializer(serializers.ModelSerializer):
             "interview_questions",
             "evaluation_questions",
         )
+
+
+class StudentRecordPatchSerializer(serializers.Serializer):
+
+    class StudentRecordEvaluationScoreSerializer(serializers.Serializer):
+        evaluation_id = serializers.IntegerField()
+        score = serializers.IntegerField()
+
+    memo = serializers.CharField()
+    evaluations = StudentRecordEvaluationScoreSerializer(many=True)
