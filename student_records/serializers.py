@@ -16,12 +16,6 @@ class StudentRecordRequestSerializer(serializers.Serializer):
     evaluation_category_id = serializers.IntegerField()
 
 
-class StudentRecordListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StudentRecord
-        fields = ("id",)
-
-
 class StudentRecordDetailSerializer(serializers.ModelSerializer):
 
     class StudentRecordEvaluationScoreSerializer(serializers.ModelSerializer):
