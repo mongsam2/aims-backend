@@ -1,28 +1,11 @@
-from rest_framework.serializers import ModelSerializer
-from .models import StudentRecord, Summarization
+from rest_framework import serializers
 
-class StudentRecordsSerializer(ModelSerializer):
-    class Meta:
-        model = StudentRecord
-        fields = ("id", "file",)
 
-class SummarizationSerializer(ModelSerializer):
-    class Meta:
-        model = Summarization
-        exclude = ("id",)
-
-class StudentRecordDetailSerializer(ModelSerializer):
-    summarization = SummarizationSerializer()
-    class Meta:
-        model = StudentRecord
-        fields = "__all__"
-
-class StudentRecordMemoSerializer(ModelSerializer):
-    class Meta:
-        model = StudentRecord
-        fields = ("memo",)
-
-class StudentRecordScoreSerializer(ModelSerializer):
-    class Meta:
-        model = StudentRecord
-        fields = ("score1", "score2", "score3", "score4",)
+class StudentRecordRequestSerializer(serializers.Serializer):
+    student_id = serializers.CharField(max_length=8)
+    student_name = serializers.CharField(max_length=10)
+    department = serializers.CharField(max_length=20)
+    application_type = serializers.CharField(max_length=10)
+    ocr_text = serializers.CharField()
+    file = serializers.CharField()
+    evaluation_category_id = serializers.IntegerField()
