@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from .models import StudentRecord
 
 
 class StudentRecordRequestSerializer(serializers.Serializer):
@@ -9,3 +10,10 @@ class StudentRecordRequestSerializer(serializers.Serializer):
     ocr_text = serializers.CharField()
     file = serializers.CharField()
     evaluation_category_id = serializers.IntegerField()
+
+
+class StudentRecordListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = StudentRecord
+        fields = ("id",)

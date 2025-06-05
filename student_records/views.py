@@ -8,6 +8,9 @@ from rest_framework import status
 
 
 class StudentRecordsView(APIView):
+    def get(self, request):
+        student_records = StudentRecord.objects.values_list("id", flat=True)
+        return Response(student_records, status=200)
 
     def post(self, request):
         serializer = serializers.StudentRecordRequestSerializer(data=request.data)
