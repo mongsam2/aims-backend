@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from .models import Essay, EssayEvaluationScore
 
 class EssayRequestSerializer(serializers.Serializer):
     student_id = serializers.CharField(max_length=8)
@@ -8,3 +9,24 @@ class EssayRequestSerializer(serializers.Serializer):
     ocr_text = serializers.CharField()
     file = serializers.CharField()
     evaluation_category_id = serializers.IntegerField()
+
+
+class EssayDetailSerializer(serializers.ModelSerializer):
+    class EssayEvaluationScoreSerializer(serializers.ModelSerializer):
+        evaluation_id = serializers.IntegerField(source="id")
+        content = serializers.CharField(source="question.content")
+
+        class Meta:
+            model = EssayEvaluationScore
+            fields = ("evaluation_id", "content", "score")
+
+    evaluation_questions = EssayEvaluationScoreSerializer(many=True)
+
+    class Meta:
+        model = Essay
+        fields = (
+            "file",
+            "summary",
+            "score_by_length",
+            "evaluation_questions",
+        )
