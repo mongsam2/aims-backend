@@ -11,6 +11,9 @@ class StudentRecordEvaluationScoreManager(models.Manager):
 class StudentRecordEvaluationCategory(models.Model):
     category_name = models.CharField(max_length=100)
 
+    class Meta:
+        db_table = "student_record_evaluation_category"
+
 
 class StudentRecordEvaluationQuestion(models.Model):
     title = models.CharField(max_length=100)
@@ -20,6 +23,9 @@ class StudentRecordEvaluationQuestion(models.Model):
         on_delete=models.CASCADE,
         db_column="category_id",
     )
+
+    class Meta:
+        db_table = "student_record_evaluation_question"
 
 
 class StudentRecord(models.Model):
@@ -40,6 +46,9 @@ class StudentRecord(models.Model):
         "students.Student", on_delete=models.CASCADE, db_column="student_id"
     )
 
+    class Meta:
+        db_table = "student_record"
+
 
 class StudentRecordEvaluationScore(models.Model):
     score = models.PositiveIntegerField(null=True)
@@ -53,3 +62,6 @@ class StudentRecordEvaluationScore(models.Model):
     )
 
     objects = StudentRecordEvaluationScoreManager()
+
+    class Meta:
+        db_table = "student_record_evaluation_score"

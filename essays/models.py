@@ -6,12 +6,18 @@ class EssayEvaluationCategory(models.Model):
     title = models.CharField(max_length=100)
     range_score = models.TextField()
 
+    class Meta:
+        db_table = "essay_evaluation_category"
+
 
 class EssayEvaluationQuestion(models.Model):
     content = models.TextField()
     category = models.ForeignKey(
         EssayEvaluationCategory, on_delete=models.CASCADE, db_column="category_id"
     )
+
+    class Meta:
+        db_table = "essay_evaluation_question"
 
 
 class Essay(models.Model):
@@ -31,6 +37,9 @@ class Essay(models.Model):
         "students.Student", on_delete=models.CASCADE, db_column="student_id"
     )
 
+    class Meta:
+        db_table = "essay"
+
 
 class EssayEvaluationScore(models.Model):
     score = models.PositiveIntegerField(null=True)
@@ -38,3 +47,6 @@ class EssayEvaluationScore(models.Model):
     question = models.ForeignKey(
         EssayEvaluationQuestion, on_delete=models.CASCADE, db_column="question_id"
     )
+
+    class Meta:
+        db_table = "essay_evaluation_score"

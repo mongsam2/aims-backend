@@ -28,3 +28,6 @@ class Student(models.Model):
     application_type = models.CharField(max_length=10)
 
     objects = StudentManager()
+
+    class Meta:
+        db_table = "student"
