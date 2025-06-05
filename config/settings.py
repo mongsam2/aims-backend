@@ -153,6 +153,7 @@ UPSTAGE_API_KEY = os.getenv("UPSTAGE_API_KEY")
 
 VALID_DATE = "2024-09-03"
 
+# AWS
 AWS_ACCESS_KEY = os.environ.get("AWS_ACCESS_KEY")
 AWS_SECRET_KEY = os.environ.get("AWS_SECRET_KEY")
 AWS_BUCKET_NAME = os.environ.get("AWS_BUCKET_NAME")
