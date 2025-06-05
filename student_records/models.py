@@ -1,25 +1,6 @@
 from django.db import models
 
 
-class StudentRecordManager(models.Manager):
-    def get_or_create(
-        self, student_id: str, student_name: str, department: str, application_type: str
-    ):
-        try:
-            return self.get(
-                code=student_id,
-                department=department,
-                application_type=application_type,
-            )
-        except:
-            return self.create(
-                code=student_id,
-                name=student_name,
-                department=department,
-                application_type=application_type,
-            )
-
-
 # Create your models here.
 class StudentRecordEvaluationCategory(models.Model):
     category_name = models.CharField(max_length=100)
