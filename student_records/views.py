@@ -35,6 +35,13 @@ class StudentRecordsView(APIView):
                 student=student,
             )
 
-            return Response("생활기록부 업로드 성공", status=200)
+            return Response("생활기록부 업로드 성공", status=201)
         else:
             return Response(serializer.errors, status=400)
+
+
+class StudentRecordDetailView(APIView):
+    def get(self, request, student_record_id):
+        student_record = get_object_or_404(StudentRecord, id=student_record_id)
+        serializer = serializers.StudentRecordDetailSerializer(student_record)
+        return Response(serializer.data, status=200)
