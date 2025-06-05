@@ -35,7 +35,7 @@ class StudentRecordsView(APIView):
             summary = call_upstage_llm("summarization.txt", data["ocr_text"])
             interview_questions = call_upstage_llm("question.txt", data["ocr_text"])
 
-            student_record = StudentRecord(
+            student_record = StudentRecord.objects.create(
                 ocr_text=data["ocr_text"],
                 file=data["file"],
                 summary=summary,
@@ -43,7 +43,6 @@ class StudentRecordsView(APIView):
                 evaluation_category=evaluation_category,
                 student=student,
             )
-            student_record.save()
 
             return Response("생활기록부 업로드 성공", status=201)
         else:
