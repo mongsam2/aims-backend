@@ -68,3 +68,12 @@ class StudentRecordDetailView(APIView):
 
         else:
             return Response(serializer.errors, status=400)
+
+
+class StudentRecordEvaluationView(APIView):
+    def get(self, request):
+        categories = StudentRecordEvaluationCategory.all()
+        serializer = serializers.StudentRecordEvaluationCategorySerializer(
+            categories, many=True
+        )
+        return Response(serializer.data, status=200)

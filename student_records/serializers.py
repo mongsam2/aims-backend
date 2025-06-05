@@ -1,5 +1,9 @@
 from rest_framework import serializers
-from .models import StudentRecord, StudentRecordEvaluationScore
+from .models import (
+    StudentRecord,
+    StudentRecordEvaluationScore,
+    StudentRecordEvaluationCategory,
+)
 
 
 class StudentRecordRequestSerializer(serializers.Serializer):
@@ -50,3 +54,10 @@ class StudentRecordPatchSerializer(serializers.Serializer):
 
     memo = serializers.CharField()
     evaluations = StudentRecordEvaluationScoreSerializer(many=True)
+
+
+class StudentRecordEvaluationCategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = StudentRecordEvaluationCategory
+        fields = ("id", "category_name")
