@@ -72,7 +72,7 @@ class StudentRecordDetailView(APIView):
 
 class StudentRecordEvaluationView(APIView):
     def get(self, request):
-        categories = StudentRecordEvaluationCategory.all()
+        categories = StudentRecordEvaluationCategory.objects.all()
         serializer = serializers.StudentRecordEvaluationCategorySerializer(
             categories, many=True
         )
