@@ -8,7 +8,7 @@ from .models import (
 )
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from rest_framework import status
+from utils.upstage import call_upstage_llm
 
 
 class StudentRecordsView(APIView):
@@ -32,9 +32,14 @@ class StudentRecordsView(APIView):
                 StudentRecordEvaluationCategory, id=data["evaluation_category_id"]
             )
 
+            summary = call_upstage_llm("summarization.txt", data["ocr_text"])
+            interview_questions = call_upstage_llm("question.txt", data["ocr_text"])
+
             student_record = StudentRecord(
                 ocr_text=data["ocr_text"],
                 file=data["file"],
+                summary=summary,
+                interview_questions=interview_questions,
                 evaluation_category=evaluation_category,
                 student=student,
             )

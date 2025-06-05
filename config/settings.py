@@ -164,4 +164,6 @@ AWS_SECRET_KEY = os.environ.get("AWS_SECRET_KEY")
 AWS_BUCKET_NAME = os.environ.get("AWS_BUCKET_NAME")
 AWS_REGION_NAME = os.environ.get("AWS_REGION_NAME")
 
+UPSTAGE_API_KEY=os.environ.get("UPSTAGE_API_KEY")
+
 APPEND_SLASH = False
