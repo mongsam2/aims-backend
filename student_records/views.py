@@ -38,6 +38,7 @@ class StudentRecordsView(APIView):
                 evaluation_category=evaluation_category,
                 student=student,
             )
+            student_record.save()
 
             return Response("생활기록부 업로드 성공", status=201)
         else:
