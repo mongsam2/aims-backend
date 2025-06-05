@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 
 # Create your views here.
-class SePresignedUrlView(APIView):
+class S3PresignedUrlView(APIView):
     def post(self, request):
         file_type = request.data.get("file_type")
         if file_type not in ("image/png", "application/pdf", "image/jpeg"):
