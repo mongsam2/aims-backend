@@ -17,10 +17,10 @@ class StudentRecordEvaluationQuestion(models.Model):
 
 
 class StudentRecord(models.Model):
-    state = models.CharField(max_length=3)
+    state = models.CharField(max_length=3, default="제출")
     uploaded_date = models.DateField(auto_now_add=True)
     ocr_text = models.TextField(null=True)
-    file = models.URLField()
+    file = models.TextField()
     memo = models.TextField(null=True)
     summary = models.TextField(null=True)
     interview_questions = models.TextField(null=True)
