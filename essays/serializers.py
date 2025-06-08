@@ -21,7 +21,11 @@ class EssayDetailSerializer(serializers.ModelSerializer):
             model = EssayEvaluationScore
             fields = ("evaluation_id", "content", "score")
 
-    evaluation_questions = EssayEvaluationScoreSerializer(many=True)
+    evaluation_questions = serializers.SerializerMethodField()
+
+    def get_evaluation_questions(self, obj):
+        scores = obj.evaluation_scores.all()
+        return self.EssayEvaluationScoreSerializer(scores, many=True).data
 
     class Meta:
         model = Essay

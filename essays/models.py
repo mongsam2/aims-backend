@@ -13,7 +13,7 @@ class EssayEvaluationCategory(models.Model):
 class EssayEvaluationQuestion(models.Model):
     content = models.TextField()
     category = models.ForeignKey(
-        EssayEvaluationCategory, on_delete=models.CASCADE, db_column="category_id"
+        EssayEvaluationCategory, on_delete=models.CASCADE, db_column="category_id", related_name="evaluation_questions"
     )
 
     class Meta:
@@ -43,7 +43,7 @@ class Essay(models.Model):
 
 class EssayEvaluationScore(models.Model):
     score = models.PositiveIntegerField(null=True)
-    essay = models.ForeignKey(Essay, on_delete=models.CASCADE, db_column="essay_id")
+    essay = models.ForeignKey(Essay, on_delete=models.CASCADE, db_column="essay_id", related_name="evaluation_scores")
     question = models.ForeignKey(
         EssayEvaluationQuestion, on_delete=models.CASCADE, db_column="question_id"
     )
