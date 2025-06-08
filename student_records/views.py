@@ -44,6 +44,9 @@ class StudentRecordsView(APIView):
                 student=student,
             )
 
+            for question_instance in evaluation_category.evaluation_questions.all():
+                StudentRecordEvaluationScore.objects.create(student_record=student_record, question=question_instance, score=1)
+
             return Response("생활기록부 업로드 성공", status=201)
         else:
             return Response(serializer.errors, status=400)
@@ -70,6 +73,7 @@ class StudentRecordDetailView(APIView):
                 )
                 score_instance.score = evaluation["score"]
                 score_instance.save()
+            return Response("수정 완료", status=200)
 
         else:
             return Response(serializer.errors, status=400)

@@ -4,7 +4,7 @@ from django.db import models
 # Manager
 class StudentRecordEvaluationScoreManager(models.Manager):
     def get_queryset(self):
-        return self.get_queryset().select_related("question")
+        return super().get_queryset().select_related("question")
 
 
 # Create your models here.
@@ -22,6 +22,7 @@ class StudentRecordEvaluationQuestion(models.Model):
         StudentRecordEvaluationCategory,
         on_delete=models.CASCADE,
         db_column="category_id",
+        related_name="evaluation_questions"
     )
 
     class Meta:
@@ -33,7 +34,7 @@ class StudentRecord(models.Model):
     uploaded_date = models.DateField(auto_now_add=True)
     ocr_text = models.TextField(null=True)
     file = models.TextField()
-    memo = models.TextField(null=True)
+    memo = models.TextField(default="")
     summary = models.TextField(null=True)
     interview_questions = models.TextField(null=True)
     evaluation_category = models.ForeignKey(
@@ -53,7 +54,7 @@ class StudentRecord(models.Model):
 class StudentRecordEvaluationScore(models.Model):
     score = models.PositiveIntegerField(null=True)
     student_record = models.ForeignKey(
-        StudentRecord, on_delete=models.CASCADE, db_column="student_record_id"
+        StudentRecord, on_delete=models.CASCADE, db_column="student_record_id", related_name="evaluation_scores"
     )
     question = models.ForeignKey(
         StudentRecordEvaluationQuestion,

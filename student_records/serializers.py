@@ -26,8 +26,12 @@ class StudentRecordDetailSerializer(serializers.ModelSerializer):
         class Meta:
             model = StudentRecordEvaluationScore
             fields = ("evaluation_id", "title", "description", "score")
+    evaluation_questions = serializers.SerializerMethodField()
 
-    evaluation_questions = StudentRecordEvaluationScoreSerializer(many=True)
+    def get_evaluation_questions(self, obj):
+        scores = obj.evaluation_scores.all()
+        print(scores)
+        return self.StudentRecordEvaluationScoreSerializer(scores, many=True).data
 
     class Meta:
         model = StudentRecord
@@ -46,8 +50,8 @@ class StudentRecordPatchSerializer(serializers.Serializer):
         evaluation_id = serializers.IntegerField()
         score = serializers.IntegerField()
 
-    memo = serializers.CharField()
-    evaluations = StudentRecordEvaluationScoreSerializer(many=True)
+    memo = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    evaluations = StudentRecordEvaluationScoreSerializer(many=True, required=False)
 
 
 class StudentRecordEvaluationCategorySerializer(serializers.ModelSerializer):
