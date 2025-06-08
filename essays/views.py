@@ -17,7 +17,7 @@ class EssaysView(APIView):
         serializer = serializers.EssayRequestSerializer(data=request.data)
         if serializer.is_valid():
             data = serializer.validated_data
-
+            
             student = Student.objects.get_or_create(
                 student_id=data["student_id"],
                 student_name=data["student_name"],
@@ -32,9 +32,9 @@ class EssaysView(APIView):
             refine_text = call_upstage_llm("refine_prompt.txt", data["ocr_text"])
             total_length = len(refine_text)
             length_penalty = get_length_penalty(evaluation_category.range_score, total_length)
-            summary = call_upstage_llm("essay_prompt2.txt", data["ocr_text"])
+            summary = call_upstage_llm("essay_prompt2.txt", refine_text)
 
-            Essay.objects.create(
+            essay = Essay.objects.create(
                 ocr_text=data["ocr_text"],
                 file=data["file"],
                 summary=summary,
@@ -43,22 +43,25 @@ class EssaysView(APIView):
                 student=student,   
             )
 
+            for question_instance in evaluation_category.evaluation_questions.all():
+                EssayEvaluationScore.objects.create(essay=essay, question=question_instance, score=1)
+
             return Response("논술 답안지 업로드 성공", status=201)
         else:
             return Response(serializer.errors, status=400)
         
 
 class EssayDetailView(APIView):
-    def get(self, request, student_record_id):
-        essay = get_object_or_404(Essay, id=student_record_id)
+    def get(self, request, essay_id):
+        essay = get_object_or_404(Essay, id=essay_id)
         serializer = serializers.EssayDetailSerializer(essay)
         return Response(serializer.data, status=200)
 
-    def patch(self, request, student_record_id):
+    def patch(self, request, essay_id):
         serializer = serializers.EssayPatchSerializer(data=request.data, many=True)
         if serializer.is_valid():
             data = serializer.validated_data
-            essay = get_object_or_404(Essay, id=student_record_id)
+            essay = get_object_or_404(Essay, id=essay_id)
 
             for evaluation in data:
                 score_instance = get_object_or_404(
@@ -66,6 +69,6 @@ class EssayDetailView(APIView):
                 )
                 score_instance.score = evaluation["score"]
                 score_instance.save()
-
+            return Response("수정 성공", status=200)
         else:
             return Response(serializer.errors, status=400)
